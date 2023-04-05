@@ -10,7 +10,9 @@ static FuncPtr0 SceneManager_Func_Draw = NULL;
 static FuncPtr0 SceneManager_Func_Clear = NULL;
 static FuncPtr0 SceneManager_Func_VSync = NULL;
 static BOOL isSceneChanged = FALSE;
-
+static BOOL isFirst = TRUE;
+static int sceneID = -1;
+static int nextSceneID = -1;
 static pSSceneWork scenes = NULL;
 
 /////////////////////////////////
@@ -23,6 +25,16 @@ void SceneManager_Init()
     SceneManager_Func_Draw = NULL;
     SceneManager_Func_Clear = NULL;
     isSceneChanged = FALSE;
+    isFirst = TRUE;
+    sceneID = nextSceneID = -1;
+}
+
+/////////////////////////////////
+// シーンIDの関数に切り替える
+/////////////////////////////////
+static void SetChangeFunc(int id)
+{
+
 }
 
 /////////////////////////////////
@@ -30,8 +42,26 @@ void SceneManager_Init()
 /////////////////////////////////
 void SceneManager_ChangeScene(int nextscene)
 {
-//    self->nextScene = scene;
-    isSceneChanged = TRUE;
+    if (sceneID != nextscene)
+    {
+        nextSceneID = nextscene;
+        pSSceneWork scene = &scenes[nextSceneID];
+        SceneManager_Func_Init = scene->Init;
+        SceneManager_Func_Update = scene->Update;
+        SceneManager_Func_Draw = scene->Draw;
+        SceneManager_Func_Clear = scene->Clear;
+        SceneManager_Func_VSync = scene->VSync;
+        isSceneChanged = TRUE;
+        // 初回のChangeだったら、Initを呼ぶ
+        if (isFirst)
+        {
+            isFirst = FALSE;
+            if (SceneManager_Func_Init != NULL)
+            {
+                SceneManager_Func_Init();
+            }
+        }
+    }
 }
 
 /////////////////////////////////
@@ -74,6 +104,14 @@ void Scene_Draw()
     {
         SceneManager_Func_Draw();
     }
+    // シーン切替があったら、シーンを切り替える
+    if (isSceneChanged)
+    {
+        isSceneChanged = FALSE;
+        Scene_Clear();      // 現在のシーンのクリア処理
+        SceneManager_ChangeScene(nextSceneID);
+    }
+
 }
 
 /////////////////////////////////

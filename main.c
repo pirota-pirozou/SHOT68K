@@ -64,6 +64,9 @@ int main(int argc, char *argv[])
 	SceneManager_Init();
 	SceneManager_Regist(sceneTable);
 
+	// シーンの切り替え
+	SceneManager_ChangeScene(SCENE_ID_TITLE);
+
 	// ゲームパッドのテスト
 	int pad = 0;
 	// メインループテスト
@@ -75,8 +78,14 @@ int main(int argc, char *argv[])
 		}
 		pad = gamepad();
 		printf("pad = %02X\n", pad);
+
+		Scene_Update();		// シーンの更新
+		Scene_Draw();		// シーンの描画
+		// VSyncの待ち
 		vsync();
+		Scene_VSync();		// シーンの垂直同期後の処理
 	}
+	Scene_Clear();			// ゲームループから抜けるときシーンのクリア
 
 	// プログラム終了
 	// プログラムのAbortアドレスを強引にここに設定する
