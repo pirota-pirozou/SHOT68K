@@ -4,6 +4,7 @@
 //
 
 #include "SceneGame.h"
+//#include "GamePadManager.h"
 
 // ゲームシーン　初期化
 void Game_Init(void)
@@ -15,6 +16,15 @@ void Game_Init(void)
 void Game_Update(void)
 {
     printf("Game_Update() ");
+    // ゲームパッドの値を取得
+    unsigned short pad = GamePadManager_GetPad();
+    unsigned short pad_trg = GamePadManager_GetTrigger();
+
+    if (pad_trg & PAD_A)
+    {
+        // Aボタンでタイトルシーンへ遷移
+        SceneManager_ChangeScene(SCENE_ID_TITLE);
+    }
 }
 
 // ゲームシーン　描画

@@ -32,7 +32,8 @@ COMMON_FLAGS = -m68000 -Os $(INCLUDE_FLAGS)
 CFLAGS = $(COMMON_FLAGS) -Wno-builtin-declaration-mismatch -fcall-used-d2 -fcall-used-a2 -fno-defer-pop -finput-charset=cp932 -fexec-charset=cp932 -fverbose-asm
 
 # *.c ソースファイル
-C_SRCS = main.c SceneManager.c SceneTitle.c SceneGame.c
+C_SRCS = main.c SceneManager.c GamePadManager.c \
+		 SceneTitle.c SceneGame.c
 
 # *.s ソースファイル
 ASM_SRCS = mylib.s

@@ -32,9 +32,14 @@ void SceneManager_Init()
 /////////////////////////////////
 // シーンIDの関数に切り替える
 /////////////////////////////////
-static void SetChangeFunc(int id)
+static void SetChangeFunc(int sid)
 {
-
+    pSSceneWork scene = &scenes[sid];
+    SceneManager_Func_Init = scene->Init;
+    SceneManager_Func_Update = scene->Update;
+    SceneManager_Func_Draw = scene->Draw;
+    SceneManager_Func_Clear = scene->Clear;
+    SceneManager_Func_VSync = scene->VSync;
 }
 
 /////////////////////////////////
@@ -45,22 +50,21 @@ void SceneManager_ChangeScene(int nextscene)
     if (sceneID != nextscene)
     {
         nextSceneID = nextscene;
-        pSSceneWork scene = &scenes[nextSceneID];
-        SceneManager_Func_Init = scene->Init;
-        SceneManager_Func_Update = scene->Update;
-        SceneManager_Func_Draw = scene->Draw;
-        SceneManager_Func_Clear = scene->Clear;
-        SceneManager_Func_VSync = scene->VSync;
-        isSceneChanged = TRUE;
         // 初回のChangeだったら、Initを呼ぶ
         if (isFirst)
         {
             isFirst = FALSE;
+            SetChangeFunc(nextSceneID);
             if (SceneManager_Func_Init != NULL)
             {
                 SceneManager_Func_Init();
             }
         }
+        else
+        {
+            isSceneChanged = TRUE;
+        }
+
     }
 }
 
@@ -109,7 +113,10 @@ void Scene_Draw()
     {
         isSceneChanged = FALSE;
         Scene_Clear();      // 現在のシーンのクリア処理
+        // 次のシーンの関数ポインタをセット
         SceneManager_ChangeScene(nextSceneID);
+        // 次のシーンの初期化処理
+        Scene_Init();
     }
 
 }

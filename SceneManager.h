@@ -10,6 +10,7 @@
 #include <doslib.h>
 #include <iocslib.h>
 #include "types.h"
+#include "GamePadManager.h"
 
 typedef void (*FuncPtr0)(void);         // 関数ポインタの型定義
 

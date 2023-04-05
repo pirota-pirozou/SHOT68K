@@ -8,6 +8,7 @@
 #include <iocslib.h>
 #include "types.h"
 #include "mylib.h"
+#include "GamePadManager.h"
 #include "SceneManager.h"
 #include "SceneTitle.h"
 #include "SceneGame.h"
@@ -60,6 +61,9 @@ int main(int argc, char *argv[])
 
 //	INKEY();				// キー入力待ち
 
+	// ゲームパッドマネージャーの初期化
+	GamePadManager_Init();
+
 	// シーンマネージャーの初期化
 	SceneManager_Init();
 	SceneManager_Regist(sceneTable);
@@ -68,7 +72,7 @@ int main(int argc, char *argv[])
 	SceneManager_ChangeScene(SCENE_ID_TITLE);
 
 	// ゲームパッドのテスト
-	int pad = 0;
+	unsigned short pad = 0;
 	// メインループテスト
 	for (;;)
 	{
@@ -76,7 +80,9 @@ int main(int argc, char *argv[])
 		{
 			break;
 		}
-		pad = gamepad();
+		GamePadManager_Update();	// ゲームパッドの更新
+
+		pad = GamePadManager_GetPad();
 		printf("pad = %02X\n", pad);
 
 		Scene_Update();		// シーンの更新
