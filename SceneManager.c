@@ -40,6 +40,7 @@ static void SetChangeFunc(int sid)
     SceneManager_Func_Draw = scene->Draw;
     SceneManager_Func_Clear = scene->Clear;
     SceneManager_Func_VSync = scene->VSync;
+
 }
 
 /////////////////////////////////
@@ -54,7 +55,8 @@ void SceneManager_ChangeScene(int nextscene)
         if (isFirst)
         {
             isFirst = FALSE;
-            SetChangeFunc(nextSceneID);
+            sceneID = nextSceneID;
+            SetChangeFunc(sceneID);
             if (SceneManager_Func_Init != NULL)
             {
                 SceneManager_Func_Init();
@@ -81,11 +83,10 @@ void SceneManager_Regist(pSSceneWork scene)
 /////////////////////////////////
 void Scene_Init()
 {
-    SceneManager_Func_Init = NULL;
-    SceneManager_Func_Update = NULL;
-    SceneManager_Func_Draw = NULL;
-    SceneManager_Func_Clear = NULL;
-    isSceneChanged = FALSE;
+    if (SceneManager_Func_Init != NULL)
+    {
+        SceneManager_Func_Init();
+    }
 }
 
 /////////////////////////////////
@@ -113,8 +114,11 @@ void Scene_Draw()
     {
         isSceneChanged = FALSE;
         Scene_Clear();      // 現在のシーンのクリア処理
+
         // 次のシーンの関数ポインタをセット
-        SceneManager_ChangeScene(nextSceneID);
+        sceneID = nextSceneID;
+        SetChangeFunc(sceneID);
+
         // 次のシーンの初期化処理
         Scene_Init();
     }

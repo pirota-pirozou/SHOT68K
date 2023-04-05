@@ -4,7 +4,6 @@
 //
 
 #include "SceneTitle.h"
-//#include "GamePadManager.h"
 
 // タイトルシーン　初期化
 void Title_Init(void)

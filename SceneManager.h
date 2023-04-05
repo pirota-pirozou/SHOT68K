@@ -25,7 +25,7 @@ typedef struct
 } SSceneWork, *pSSceneWork;
 
 // 最大シーン数
-#define SCENE_MAX 10
+//#define SCENE_MAX 10
 
 // シーンID
 enum

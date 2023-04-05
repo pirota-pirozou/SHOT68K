@@ -4,7 +4,6 @@
 //
 
 #include "SceneGame.h"
-//#include "GamePadManager.h"
 
 // ゲームシーン　初期化
 void Game_Init(void)
