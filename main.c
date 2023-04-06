@@ -128,7 +128,7 @@ BOOL load_data(void)
 		// スプライトパターンとパレットの定義
 		CM_def_px2(px2buf);
 		break;
-	} while (1);
+	} while (0);
 
 	if (fp != NULL)
 	{
