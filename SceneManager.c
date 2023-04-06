@@ -24,6 +24,7 @@ void SceneManager_Init()
     SceneManager_Func_Update = NULL;
     SceneManager_Func_Draw = NULL;
     SceneManager_Func_Clear = NULL;
+    SceneManager_Func_VSync = NULL;
     isSceneChanged = FALSE;
     isFirst = TRUE;
     sceneID = nextSceneID = -1;
