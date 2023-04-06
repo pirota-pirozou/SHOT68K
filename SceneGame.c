@@ -30,6 +30,13 @@ void Game_Update(void)
 void Game_Draw(void)
 {
     printf("Game_Draw()\n");
+    CM_sp_set(0, 50, 50, 0x0141, 3);
+//					*ｄ１＝スプライトプレーン番号（０～１２７）
+//					*ｄ２＝ｘ座標
+//					*ｄ３＝ｙ座標
+//					*ｄ４＝パターンコード %HR_VR_X_X_COLR_SPATSPAT : 下位8bit:パターン / 8-12bit:カラー
+//					*ｄ５＝プライオリティ %0000_0000_0000_0_0_PR : 00 表示しない / 01 BG0>BG1>SP / 10 BG0>SP>BG1 / 11 SP>BG0>BG1
+
 }
 
 // ゲームシーン　VSync

@@ -184,23 +184,24 @@ regs	reg	d3-d7/a3-a5
 	lea.l	SP_SCR+6,a0			* ＳＰスクロールレジスタ　初期化
 	moveq	#127,d0
 spcl_loop:
-	clr.w	(a0)
+	clr.w	(a0)				* プライオリティ：0 （非表示）
 	addq.l	#8,a0
 	dbra	d0,spcl_loop
 
-	clr.l	BG_SCRX0			* ＢＧ０　Ｈｏｍｅ
-	clr.l	BG_SCRX1			* ＢＧ１　Ｈｏｍｅ
+	clr.l	BG0_SCRX			* ＢＧ０スクロール 0,0
+	clr.l	BG1_SCRX			* ＢＧ１スクロール 0,0
 
-
+	* グラフィック優先順位
 crtmode = %00000_001				* 256Colors
 	move.b	#crtmode,$E80028		* ( R20 )
 	move.b	#crtmode,$E82401		* 256colors
-	move.b	#%1110_0100,$E82501		* Ｓｃ０＞Ｓｃ１
-	move.b	#$6F,$E82601			* グラフィック|スプライト表示許可
+	* ビデオコントローラレジスタ
+	move.w	#%00_10_00_01_1110_0100,$E82500	* R1>TEXT>SP>GR ／ GR=Sc0>Sc1
+	move.b	#$6F,$E82601			* R2>グラフィック|スプライト表示許可
 
 	move.b	#%1111,$E8002B			* グラフィックスクリーン１，２
 
-	move.w	#%00000010_00000011,$EB0808	* ＢＧ０＝ＴＥＸＴ１
+	move.w	#%00000010_00_011_011,$EB0808	* ＢＧ０＝ＴＥＸＴ１／ＢＧ１＝ＴＥＸＴ１/DISP ON
 
 	movem.l (sp)+,regs
 	rts

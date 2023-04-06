@@ -141,13 +141,13 @@ _CM_sprite_off:
 
 	** 割り込み処理ルーチン **
 sprite_int:
-*	move.w	sr,d0		*割り込みを許可する。割り込みプログラムでは
-*	subi.w	#$100,d0	*これを入れておくのが礼儀。これがないと曲が遅れたりなどの
-*	move.w	d0,sr		*弊害（この処理中は他の処理が割り込めなくなるため）が出ます。
-				*ただし、デバッグ中は邪魔なので完成してから入れましょう。
+	move.w	sr,d0		*割り込みを許可する。割り込みプログラムでは
+	subi.w	#$0100,d0	*これを入れておくのが礼儀。これがないと曲が遅れたりなどの
+	move.w	d0,sr		*弊害（この処理中は他の処理が割り込めなくなるため）が出ます。
+				*ただし、デバッグ中は邪魔なので完成してから入れましょう。だそうです。
 *	andi.b	#$DF,$E88013
 
-*	andi.b	#$FD,$EB0808			* SP_DISP OFF
+	andi.b	#$FD,$EB0808			* SP_DISP OFF
 
 	**********************	スプライトレジスタ　ＤＭＡ転送
 	move.b	#$18,CCR2			* DMA Stop!!
@@ -155,10 +155,6 @@ sprite_int:
 	move.l	#$EB0000,DAR2			* DIST.ADRESS
 	move.w	#$100,MTC2			* SIZE COUNTER
 	move.b	#$88,CCR2			* DMA Move start!
-
-*	ori.b	#$02,$EB0808			* SP_DISP ON
-
-*	ori.b	#$20,$E88013
 
 @@:	* DMA終了待ち
 	tst.w	MTC2
@@ -175,6 +171,11 @@ _CM_vsync:
 	tst.b  sp_ready
 	beq	@b
 	move.b	#0,sp_ready
+@@:
+*	btst.b	#4,$E88001			* 垂直帰線期間中は待つ
+*	beq	@b
+
+	ori.b	#$02,$EB0808			* SP_DISP ON
 	rts
 
 *************************************

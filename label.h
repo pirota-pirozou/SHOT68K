@@ -37,10 +37,10 @@ SP_PAL		equ	TEXTPAL		* ＳＰパレット・レジスタ
 PCG_AREA	equ	$EB8000		* ＰＣＧエリア
 BG_TXT0		equ	$EBC000		* ＢＧテキスト０
 BG_TXT1		equ	$EBE000		* ＢＧテキスト１
-BG_SCRX0	equ	$EB0800		* ＢＧスクロールレジスタ０　Ｘ
-BG_SCRY0	equ	$EB0802		* ＢＧスクロールレジスタ０　Ｙ
-BG_SCRX1	equ	$EB0804		* ＢＧスクロールレジスタ１　Ｘ
-BG_SCRY1	equ	$EB0806		* ＢＧスクロールレジスタ１　Ｙ
+BG0_SCRX	equ	$EB0800		* ＢＧスクロールレジスタ０　Ｘ
+BG0_SCRY	equ	$EB0802		* ＢＧスクロールレジスタ０　Ｙ
+BG1_SCRX	equ	$EB0804		* ＢＧスクロールレジスタ１　Ｘ
+BG1_SCRY	equ	$EB0806		* ＢＧスクロールレジスタ１　Ｙ
 BG_CNTRL	equ	$EB0808		* ＢＧコントロール
 
 	.list

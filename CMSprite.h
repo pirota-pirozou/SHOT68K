@@ -28,23 +28,23 @@ void CM_sprite_on(void);
 void CM_sprite_off(void);
 void CM_vsync(void);
 void CM_sp_set32(int, int, int, int, int);
-//					*ｄ１＝スプライトプレーン番号
+//					*ｄ１＝スプライトプレーン番号（０～１２７）
 //					*ｄ２＝ｘ座標
 //					*ｄ３＝ｙ座標
-//					*ｄ４＝パターンコード
-//					*ｄ５＝プライオリティ
+//					*ｄ４＝パターンコード %HR_VR_X_X_COLR_SPATSPAT : 下位8bit:パターン / 8-12bit:カラー
+//					*ｄ５＝プライオリティ %0000_0000_0000_0_0_PR : 00 表示しない / 01 BG0>BG1>SP / 10 BG0>SP>BG1 / 11 SP>BG0>BG1
 void CM_sp_set(int, int, int, int, int);
-//					*ｄ１＝スプライトプレーン番号
+//					*ｄ１＝スプライトプレーン番号（０～１２７）
 //					*ｄ２＝ｘ座標
 //					*ｄ３＝ｙ座標
-//					*ｄ４＝パターンコード
-//					*ｄ５＝プライオリティ
+//					*ｄ４＝パターンコード %HR_VR_X_X_COLR_SPATSPAT : 下位8bit:パターン / 8-12bit:カラー
+//					*ｄ５＝プライオリティ %0000_0000_0000_0_0_PR : 00 表示しない / 01 BG0>BG1>SP / 10 BG0>SP>BG1 / 11 SP>BG0>BG1
 
 void CM_parts_wrt(int, int, int, int);
 //					*ｄ１＝Ｂｇページ
 //					*ｄ２＝ｘ座標
 //					*ｄ３＝ｙ座標
-//					*ｄ４＝パターンコード
+//					*ｄ４＝パターンコード(0~255)
 
 void CM_parts_clr(int, int, int);
 //* ｄ１＝Ｂｇページ
