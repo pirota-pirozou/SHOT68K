@@ -8,6 +8,7 @@
 #include <iocslib.h>
 #include "types.h"
 #include "mylib.h"
+#include "CMSprite.h"
 #include "GamePadManager.h"
 #include "SceneManager.h"
 #include "SceneTitle.h"
@@ -19,6 +20,8 @@ static SSceneWork sceneTable[] =
 	{ Title_Init, Title_Update, Title_Draw, Title_VSync, Title_Clear },
 	{ Game_Init, Game_Update, Game_Draw, Game_VSync, Game_Clear }
 };
+// プロトタイプ宣言
+BOOL load_data(void);
 
 /* main */
 int main(int argc, char *argv[])
@@ -30,34 +33,16 @@ int main(int argc, char *argv[])
 	gcls(0);				// グラフィック画面クリア０
 	gcls(1);				// グラフィック画面クリア１
 
+	BOOL bSuccess;
+	bSuccess = load_data();		// データの読み込み
+
+	// データの読み込みに失敗したら終了
+	if (!bSuccess)
+	{
+		goto FORCE_QUIT;
+	}
+
 	printf("画面が切り替わりました。\n");
-
-	// メモリ確保のテスト
-	// DOSコールのメモリ確保関数を使用する。標準のmalloc()は動作が変な気がする。
-	// なぜか戻り値がint型になっているので、キャストして使用する
-	char *buf1 = (char*)MALLOC(0xA000);
-	if (buf1 < 0)
-	{
-		printf("buf1: メモリが確保できません。\n");
-	}
-
-	char *buf2 = (char*)MALLOC(0x2000);
-	if (buf2 < 0)
-	{
-		printf("buf2: メモリが確保できません。\n");
-	}
-	char *buf3 = (char*)MALLOC(0x8000);
-	if (buf3 < 0)
-	{
-		printf("buf3: メモリが確保できません。\n");
-	}
-
-	// メモリ解放のテスト
-	// 逆順に解放する
-	// なぜか引数がint型になっているので、キャストして使用する
-	MFREE((int)buf3);
-	MFREE((int)buf2);
-	MFREE((int)buf1);
 
 //	INKEY();				// キー入力待ち
 
@@ -95,6 +80,7 @@ int main(int argc, char *argv[])
 
 	// プログラム終了
 	// プログラムのAbortアドレスを強引にここに設定する
+FORCE_QUIT:
 	asm volatile (".xdef _PRG_QUIT\n");
 	asm volatile ("_PRG_QUIT:\n");
 	super_end();					// ユーザーモードへ復帰
@@ -102,4 +88,60 @@ int main(int argc, char *argv[])
 	printf("プログラムの実行を終了しました。\n");
 
 	return 0;
+}
+
+// データの読み込み
+// スプライトパターンとパレットデータを読み込み定義する
+// 引数: なし
+// Return: TRUE:成功 FALSE:失敗
+BOOL load_data(void)
+{
+	FILE *fp = NULL;
+	pPX2FILE px2buf = (pPX2FILE) -1;
+	BOOL result = TRUE;
+
+	// PX2ファイルの読み込み
+	do
+	{
+		px2buf = (pPX2FILE)MALLOC(sizeof(PX2FILE));
+		if (px2buf < 0)
+		{
+			printf("px2buf: メモリが確保できません。\n");
+			result = FALSE;
+			break;
+		}
+		// PX2ファイルの読み込み
+		fp = fopen("shoot.px2", "rb");
+		if (fp == NULL)
+		{
+			printf("スプライトファイルが開けません。\n");
+			result = FALSE;
+			break;
+		}
+		int a = fread(px2buf, sizeof(PX2FILE), 1, fp);
+		if (a != 1)
+		{
+			printf("スプライトファイルの読み込みに失敗しました。\n");
+			result = FALSE;
+			break;
+		}
+		// スプライトパターンとパレットの定義
+		CM_def_px2(px2buf);
+		break;
+	} while (1);
+
+	if (fp != NULL)
+	{
+		// ファイルクローズ
+		fclose(fp);
+		fp = NULL;
+	}
+	if (px2buf != (pPX2FILE) -1)
+	{
+		// メモリ解放
+		MFREE((int)px2buf);
+		px2buf = (pPX2FILE) -1;
+	}
+
+	return result;
 }

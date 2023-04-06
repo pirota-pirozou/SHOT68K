@@ -36,7 +36,7 @@ C_SRCS = main.c SceneManager.c GamePadManager.c \
 		 SceneTitle.c SceneGame.c
 
 # *.s ソースファイル
-ASM_SRCS = mylib.s
+ASM_SRCS = mylib.s CMSprite.s
 
 # リンク対象のライブラリファイル
 LIBS =\
