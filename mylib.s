@@ -72,7 +72,7 @@ regs	reg	d3-d7/a3-a5
 	*** ミュージックドライバが登録されてない ****
 *	pea	mdrverr
 *	DOS	_PRINT
-	addq.l	#4,sp
+*	addq.l	#4,sp
 
 	move.w	#1,-(sp)
 	DOS	_EXIT2
