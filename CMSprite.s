@@ -5,6 +5,7 @@
 *
 * このライブラリは、X68000のスプライトを扱うためのライブラリです。
 
+*	include	DMAADR.H
 	include	IOCSCALL.MAC
 	include	DOSCALL.MAC
 	include	MACRO.H
@@ -30,12 +31,13 @@ _CM_def_px2:
 	lea	$220(a0),a0
 	lea	TEXTPAL+32,a1
 	lea	PCG_AREA,a2
-
+        * スプライトパレット定義
 	move.l	#240-1,d0
 @@:
 	move.w	(a0)+,(a1)+
 	dbra	d0,@b
 
+        * キャラクタ定義
 	move.l	#12288-1,d0
 @@:
 	move.w	(a0)+,(a2)+
@@ -53,6 +55,7 @@ _CM_def_grp_palette:
 	movea.l	4(sp),a1
 	lea	GRPPAL,a0
 
+        * グラフィックパレット定義
 	moveq	#127,d0
 @@:
 	move.l	(a1)+,(a0)+
