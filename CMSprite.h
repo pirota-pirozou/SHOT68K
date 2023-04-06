@@ -24,6 +24,9 @@ extern "C" {
 #endif
 
 // プロトタイプ宣言
+
+void CM_wait_dma_end(void);
+
 void CM_def_px2(pPX2FILE);
 void CM_def_grp_palette(uint16*);
 
