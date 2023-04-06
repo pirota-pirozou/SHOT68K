@@ -21,6 +21,7 @@
         * ŠÖ”’è‹`
         .xdef _CM_sprite_on
         .xdef _CM_sprite_off
+        .xdef _CM_vsync
         .xdef _CM_sp_set32
         .xdef _CM_sp_set
         .xdef _CM_parts_wrt
@@ -159,14 +160,22 @@ sprite_int:
 
 *	ori.b	#$20,$E88013
 
-@@:
+@@:	* DMAI—¹‘Ò‚¿
 	tst.w	MTC2
 	bne	@b
 
 	move.b	#1,sp_ready
 	rte
 
-	*********************
+
+* 	*********************
+* void CM_vsync();
+_CM_vsync:
+@@:	* ‚’¼“¯ŠúŠ„‚è‚İ‘Ò‚¿
+	tst.b  sp_ready
+	beq	@b
+	move.b	#0,sp_ready
+	rts
 
 *************************************
 **    ‚R‚Q~‚R‚QƒXƒvƒ‰ƒCƒg‚o‚t‚s   **
@@ -185,6 +194,7 @@ _CM_sp_set32:
 	link	a6,#0
 reglist reg     d3-d6
 	push    reglist
+	movem.l	8(a6),d1-d5
 
 	lea.l	sprtbl,a0
 	lsl.w	#3,d1

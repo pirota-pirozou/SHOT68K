@@ -46,6 +46,8 @@ int main(int argc, char *argv[])
 
 //	INKEY();				// キー入力待ち
 
+	CM_sprite_on();			// スプライト表示管理ＯＮ
+
 	// ゲームパッドマネージャーの初期化
 	GamePadManager_Init();
 
@@ -73,10 +75,13 @@ int main(int argc, char *argv[])
 		Scene_Update();		// シーンの更新
 		Scene_Draw();		// シーンの描画
 		// VSyncの待ち
-		vsync();
-		Scene_VSync();		// シーンの垂直同期後の処理
+//		vsync();
+		CM_vsync();			// VSync待ち
+		Scene_VSync();		// シーンのVSync後の処理
 	}
 	Scene_Clear();			// ゲームループから抜けるときシーンのクリア
+
+	CM_sprite_off();		// スプライト表示管理ＯＦＦ
 
 	// プログラム終了
 	// プログラムのAbortアドレスを強引にここに設定する

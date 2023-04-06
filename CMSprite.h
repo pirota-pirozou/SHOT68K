@@ -24,6 +24,38 @@ extern "C" {
 #endif
 
 // プロトタイプ宣言
+void CM_sprite_on(void);
+void CM_sprite_off(void);
+void CM_vsync(void);
+void CM_sp_set32(int, int, int, int, int);
+//					*ｄ１＝スプライトプレーン番号
+//					*ｄ２＝ｘ座標
+//					*ｄ３＝ｙ座標
+//					*ｄ４＝パターンコード
+//					*ｄ５＝プライオリティ
+void CM_sp_set(int, int, int, int, int);
+//					*ｄ１＝スプライトプレーン番号
+//					*ｄ２＝ｘ座標
+//					*ｄ３＝ｙ座標
+//					*ｄ４＝パターンコード
+//					*ｄ５＝プライオリティ
+
+void CM_parts_wrt(int, int, int, int);
+//					*ｄ１＝Ｂｇページ
+//					*ｄ２＝ｘ座標
+//					*ｄ３＝ｙ座標
+//					*ｄ４＝パターンコード
+
+void CM_parts_clr(int, int, int);
+//* ｄ１＝Ｂｇページ
+//* ｄ２＝ｘ座標
+//* ｄ３＝ｙ座標
+
+void CM_dma32(int, int, char *, char *);
+//* d1=#%0000_0101(ﾌﾟﾛｸﾞﾗﾏｰｽﾞ･ﾏﾆｭｱﾙ参照)*
+//* d2=カウンタ                         *
+//* a1=転送元（ソース・メモリアドレス） *
+//* a2=転送先（ﾃﾞｨｽﾃｨﾈｰｼｮﾝ･Ｉ／Ｏポート)*
 
 void CM_wait_dma_end(void);
 
