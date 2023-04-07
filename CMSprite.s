@@ -33,6 +33,9 @@
         .xdef _CM_def_px2
         .xdef _CM_def_grp_palette
 
+	.xdef _CM_bg_puts
+
+
 
 * 破壊してはいけないレジスタ
 * reglist	reg	d3-d7/a3-a5
@@ -599,4 +602,40 @@ _BG_PUTS:
 	bsr	_BG_PUTC
 	bra	_BG_PUTS
 @@:
+	rts
+
+********************************************
+* 　　　いわゆるＬＯＣＡＴＥ（ＣＭ用） 　  *
+* void CM_bg_puts(const char *str, int x, int y,int col);
+
+_CM_bg_puts:
+	link	a6,#0
+reglist reg     d3
+	push	reglist
+
+	move.l	8(a6),a0		* a0=文字列アドレス
+	move.l	12(a6),d1		* X座標
+	move.l	16(a6),d2		* Y座標
+	move.l	20(a6),d3		* 色コード 0-15
+	* VRAMアドレス計算
+	lea	BG_TXT1,a1		* a1=BG1 TEXTアドレス
+	add.w	d1,d1
+	adda.l	d1,a1
+	lsl.w	#7,d2
+	adda.l	d2,a1			* A1=BG RAM ADRESS
+
+	* 色コード計算
+	lsl.w	#8,d3
+	andi.w	#$0F00,d3
+
+@@:	move.w	d3,d0
+	move.b	(a0)+,d0
+	beq	@f			* 終端まできたら終了
+
+	subi.b	#$20,d0			* 文字コードを補正
+	move.w  d0,(a1)+		* 文字コードを書き込む
+	bra.s	@b
+@@:
+	pop	reglist
+	unlk	a6
 	rts

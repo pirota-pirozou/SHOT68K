@@ -8,13 +8,13 @@
 // タイトルシーン　初期化
 void Title_Init(void)
 {
-    printf("Title_Init() ");
+//    printf("Title_Init() ");
 }
 
 // タイトルシーン　更新
 void Title_Update(void)
 {
-    printf(" Title_Update() ");
+//    printf(" TITLE_Update() ");
     // ゲームパッドの値を取得
     unsigned short pad = GamePadManager_GetPad();
     unsigned short pad_trg = GamePadManager_GetTrigger();
@@ -29,7 +29,9 @@ void Title_Update(void)
 // タイトルシーン　描画
 void Title_Draw(void)
 {
-    printf("Title_Draw()\n");
+//    printf("Title_Draw()\n");
+    CM_bg_puts("TITLE_DRAW()", 0, 0, 1);
+
     CM_sp_set(0, 50, 50, 0x0140, 3);
 //					*ｄ１＝スプライトプレーン番号（０～１２７）
 //					*ｄ２＝ｘ座標
@@ -42,11 +44,12 @@ void Title_Draw(void)
 // タイトルシーン　VSync
 void Title_VSync(void)
 {
-    printf(" Title_VSync()\n");
+//    printf(" Title_VSync()\n");
+    CM_bg_puts("TITLE_VSYNC()", 0, 1, 1);
 }
 
 // タイトルシーン　クリア（終了）
 void Title_Clear(void)
 {
-    printf("**Title_Clear()\n");
+//    printf("**Title_Clear()\n");
 }

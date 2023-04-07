@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 		goto FORCE_QUIT;
 	}
 
-	printf("画面が切り替わりました。\n");
+//	printf("画面が切り替わりました。\n");
 
 //	INKEY();				// キー入力待ち
 
@@ -60,6 +60,8 @@ int main(int argc, char *argv[])
 
 	// ゲームパッドのテスト
 	unsigned short pad = 0;
+	unsigned char strtmp[128];
+
 	// メインループテスト
 	for (;;)
 	{
@@ -70,7 +72,9 @@ int main(int argc, char *argv[])
 		GamePadManager_Update();	// ゲームパッドの更新
 
 		pad = GamePadManager_GetPad();
-		printf("pad = %02X\n", pad);
+		sprintf(strtmp, "PAD=%02X", pad);
+		CM_bg_puts(strtmp, 0, 8, 1);
+
 
 		Scene_Update();		// シーンの更新
 		Scene_Draw();		// シーンの描画

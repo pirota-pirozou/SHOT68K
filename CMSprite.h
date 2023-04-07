@@ -61,6 +61,7 @@ void CM_wait_dma_end(void);
 
 void CM_def_px2(pPX2FILE);
 void CM_def_grp_palette(uint16*);
+void CM_bg_puts(const char *, int, int, int);
 
 
 

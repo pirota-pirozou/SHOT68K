@@ -8,13 +8,13 @@
 // ゲームシーン　初期化
 void Game_Init(void)
 {
-    printf("Game_Init() ");
+//    printf("Game_Init() ");
 }
 
 // ゲームシーン　更新
 void Game_Update(void)
 {
-    printf("Game_Update() ");
+//    printf("Game_Update() ");
     // ゲームパッドの値を取得
     unsigned short pad = GamePadManager_GetPad();
     unsigned short pad_trg = GamePadManager_GetTrigger();
@@ -29,7 +29,8 @@ void Game_Update(void)
 // ゲームシーン　描画
 void Game_Draw(void)
 {
-    printf("Game_Draw()\n");
+//    printf("Game_Draw()\n");
+    CM_bg_puts("GAME_DRAW() ", 0, 0, 1);
     CM_sp_set(0, 50, 50, 0x0141, 3);
 //					*ｄ１＝スプライトプレーン番号（０～１２７）
 //					*ｄ２＝ｘ座標
@@ -42,11 +43,12 @@ void Game_Draw(void)
 // ゲームシーン　VSync
 void Game_VSync(void)
 {
-    printf(" Game_VSync()\n");
+    CM_bg_puts("GAME_VSYNC() ", 0, 1, 1);
+//    printf(" Game_VSync()\n");
 }
 
 // ゲームシーン　クリア（終了）
 void Game_Clear(void)
 {
-    printf("**Game_Clear()\n");
+//    printf("**Game_Clear()\n");
 }

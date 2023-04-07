@@ -14,7 +14,7 @@ static unsigned short pad_trg;
 // ゲームパッドマネージャー　初期化
 void GamePadManager_Init(void)
 {
-    printf("GamePadManager_Init()\n");
+//    printf("GamePadManager_Init()\n");
 
     pad = pad_bak = pad_trg = 0;
 }
