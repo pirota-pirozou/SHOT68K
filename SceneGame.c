@@ -9,12 +9,14 @@
 void Game_Init(void)
 {
 //    printf("Game_Init() ");
+    BGTEXTCL(1, 0x0100);	// BGTEXT1 CLR
 }
 
 // ゲームシーン　更新
 void Game_Update(void)
 {
 //    printf("Game_Update() ");
+    CM_bg_puts("GAME_UPDATE()", 0, 0, 1);
     // ゲームパッドの値を取得
     unsigned short pad = GamePadManager_GetPad();
     unsigned short pad_trg = GamePadManager_GetTrigger();
@@ -30,7 +32,7 @@ void Game_Update(void)
 void Game_Draw(void)
 {
 //    printf("Game_Draw()\n");
-    CM_bg_puts("GAME_DRAW() ", 0, 0, 1);
+    CM_bg_puts("GAME_DRAW()", 0, 1, 1);
     CM_sp_set(0, 50, 50, 0x0141, 3);
 //					*ｄ１＝スプライトプレーン番号（０～１２７）
 //					*ｄ２＝ｘ座標
@@ -43,7 +45,7 @@ void Game_Draw(void)
 // ゲームシーン　VSync
 void Game_VSync(void)
 {
-    CM_bg_puts("GAME_VSYNC() ", 0, 1, 1);
+    CM_bg_puts("GAME_VSYNC()", 0, 2, 1);
 //    printf(" Game_VSync()\n");
 }
 
