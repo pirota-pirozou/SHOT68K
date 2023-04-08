@@ -64,12 +64,6 @@ sp_ready:
 DMAC_V:
 	ds.l	1
 
-BG_X:	ds.w	1					* ‚a‚f@‚w|‚o‚n‚r
-BG_Y:	ds.w	1					* ‚a‚f@‚x|‚o‚n‚r
-BG_C:	ds.w	1					* ‚a‚f@‚b‚‚Œ‚‚’
-BG_P:	ds.w	1					* ‚a‚f@‚o‚‚‡‚…
-
-
 **************************************
 *@‰Šú’l‚ ‚èƒf[ƒ^•”@@@@@@@@*
 **************************************
@@ -487,127 +481,7 @@ _CM_def_grp_palette:
 	dbra	d0,@b
 	rts
 
-********************************************
-* @@@‚¢‚í‚ä‚é‚k‚n‚b‚`‚s‚di‚a‚f—pj @  *
-*                                          *
-*           ‚a‚fQ‚k‚n‚b                   *
-********************************************
-*	‚h‚F‚„‚PD‚—‚wC‚„‚QD‚—‚x
-*	”j‰óFƒiƒV
-_BG_LOC:
-	move.w	d1,BG_X
-	move.w	d2,BG_Y
-	rts
-
-********************************************
-*  @  ‚¢‚í‚ä‚é‚b‚n‚k‚n‚qi‚a‚f—pj  @@  *
-*                                          *
-*           ‚a‚fQ‚b‚n‚k                   *
-********************************************
-*	‚h‚F‚„‚OD‚‚‚b‚n‚k‚n‚q@‚c‚`‚s‚`
-*	”j‰óFƒiƒV
-_BG_COL:
-	lsl.w	#8,d0
-	andi.w	#$0F00,d0
-	move.w	d0,BG_C
-	rts
-
-********************************************
-*  ƒAƒNƒZƒX‚·‚éƒeƒLƒXƒgEƒy[ƒW‚ğŒˆ‚ß‚é@  *
-*                                          *
-*         ‚a‚fQ‚o‚`‚f‚d                   *
-********************************************
-*	‚h‚F‚„‚OD‚‚‚o‚‚‡‚…@‚m‚D
-*	”j‰óFƒiƒV
-_BG_PAGE:
-	andi.w	#1,d0
-	move.w	d0,BG_P
-	rts
-
-********************************************
-*  @@‚W~‚W‚a‚fƒtƒHƒ“ƒgE‚P•¶š•\¦      *
-*                                          *
-*         @‚a‚fQ‚o‚t‚s‚b                 *
-********************************************
-*	In:‚c‚OD‚a‚b‚g‚qD‚b‚n‚c‚d
-*	”j‰óFƒiƒV
-_BG_PUTC:
-	movem.l	d0-d1/a1,-(sp)
-	sub.w	#$20,d0
-	andi.w	#$FF,d0
-	lea	BG_TXT0,a1
-	moveq	#0,d1
-	move.w	BG_P,d1
-	lsl.w	#6,d1
-	lsl.w	#7,d1
-	adda.l	d1,a1
-
-	moveq	#0,d1
-	move.w	BG_X,d1
-	add.w	d1,d1
-	adda.l	d1,a1
-	move.w	BG_Y,d1
-	lsl.w	#7,d1				; d1=d1*128
-	adda.l	d1,a1				; A1=BG RAM ADRESS
-
-	or.w	BG_C,d0
-	move.w	d0,(a1)
-	addq.w	#1,BG_X
-	movem.l	(sp)+,d0-d1/a1
-	rts
-
-********************************************
-*    ‚W~‚W‚a‚fƒtƒHƒ“ƒgE•¶š—ñ•\¦        *
-*                                          *
-*         @‚a‚fQ‚r‚o‚b                   *
-********************************************
-*	‚h‚F‚c‚OD‚—‚·‚Ø[‚·‚Ì”
-*	”j‰óF‚c‚P|‚c‚Q
-_BG_SPC:
-	push	d1/a1
-	subq.l	#1,d0
-bgspc_loop:
-	lea	BG_TXT0,a1
-	moveq	#0,d1
-	move.w	BG_P,d1
-	lsl.w	#6,d1
-	lsl.w	#7,d1
-	adda.l	d1,a1
-
-	moveq	#0,d1
-	move.w	BG_X,d1
-	add.w	d1,d1
-	adda.l	d1,a1
-	move.w	BG_Y,d1
-	lsl.w	#7,d1
-	adda.l	d1,a1				; A1=BG RAM ADRESS
-
-	clr.w	(a1)
-	addq.w	#1,BG_X
-	dbra	d0,bgspc_loop
-
-	pop	d1/a1
-	rts
-
-********************************************
-*      ‚W~‚W‚a‚fƒtƒHƒ“ƒgE•¶š—ñ•\¦      *
-*                                          *
-*         @‚a‚fQ‚o‚t‚s‚r                 *
-********************************************
-*	‚h‚F‚`‚O‚r‚s‚qD‚`‚c‚q‚d‚r‚r
-*	”j‰óF‚c‚O
-_BG_PUTS:
-	move.b	(a0)+,d0
-	beq	@f
-	bsr	_BG_PUTC
-	bra	_BG_PUTS
-@@:
-	rts
-
-********************************************
-* @@@‚¢‚í‚ä‚é‚k‚n‚b‚`‚s‚di‚b‚l—pj @  *
 * void CM_bg_puts(const char *str, int x, int y,int col);
-
 _CM_bg_puts:
 	link	a6,#0
 reglist reg     d3
