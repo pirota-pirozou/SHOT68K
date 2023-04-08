@@ -18,6 +18,7 @@ void Game_Update(void)
 {
 //    printf("Game_Update() ");
     CM_bg_puts("GAME_UPDATE()", 0, 0, 1);
+    ObjManager_Update();    // オブジェクトマネージャーの更新
     // ゲームパッドの値を取得
     unsigned short pad = GamePadManager_GetPad();
     unsigned short pad_trg = GamePadManager_GetTrigger();
@@ -34,6 +35,7 @@ void Game_Draw(void)
 {
 //    printf("Game_Draw()\n");
     CM_bg_puts("GAME_DRAW()", 0, 1, 1);
+    ObjManager_Draw();      // オブジェクトマネージャーの描画
     CM_sp_set(0, 50, 50, 0x0141, 3);
 //					*ｄ１＝スプライトプレーン番号（０～１２７）
 //					*ｄ２＝ｘ座標
