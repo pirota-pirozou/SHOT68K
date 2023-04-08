@@ -15,11 +15,12 @@
 #include "SceneGame.h"
 
 // シーンの登録テーブル
-static SSceneWork sceneTable[] =
+static const SSceneWork sceneTable[] =
  {
 	{ Title_Init, Title_Update, Title_Draw, Title_VSync, Title_Clear },
 	{ Game_Init, Game_Update, Game_Draw, Game_VSync, Game_Clear }
 };
+
 // プロトタイプ宣言
 BOOL load_data(void);
 

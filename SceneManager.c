@@ -13,7 +13,7 @@ static BOOL isSceneChanged = FALSE;
 static BOOL isFirst = TRUE;
 static int sceneID = -1;
 static int nextSceneID = -1;
-static pSSceneWork scenes = NULL;
+static const SSceneWork * scenes = NULL;
 
 /////////////////////////////////
 // シーンマネージャー自体の初期化
@@ -35,7 +35,7 @@ void SceneManager_Init()
 /////////////////////////////////
 static void SetChangeFunc(int sid)
 {
-    pSSceneWork scene = &scenes[sid];
+    const SSceneWork* scene = &scenes[sid];
     SceneManager_Func_Init = scene->Init;
     SceneManager_Func_Update = scene->Update;
     SceneManager_Func_Draw = scene->Draw;
@@ -74,7 +74,7 @@ void SceneManager_ChangeScene(int nextscene)
 /////////////////////////////////
 // シーンマネージャー：シーン登録
 /////////////////////////////////
-void SceneManager_Regist(pSSceneWork scene)
+void SceneManager_Regist(const SSceneWork* scene)
 {
     scenes = scene;
 }

@@ -5,6 +5,9 @@
 
 #include "SceneTitle.h"
 
+extern int score;                  // スコア
+extern int hiscore;                // ハイスコア
+
 // タイトルシーン　初期化
 void Title_Init(void)
 {
@@ -16,7 +19,7 @@ void Title_Init(void)
 void Title_Update(void)
 {
 //    printf(" TITLE_Update() ");
-    CM_bg_puts("TITLE_UPDATE()", 0, 0, 1);
+    CM_bg_puts("TITLE_UPDATE()", 0, 1, 1);
     // ゲームパッドの値を取得
     unsigned short pad = GamePadManager_GetPad();
     unsigned short pad_trg = GamePadManager_GetTrigger();
@@ -32,7 +35,7 @@ void Title_Update(void)
 void Title_Draw(void)
 {
 //    printf("Title_Draw()\n");
-    CM_bg_puts("TITLE_DRAW()", 0, 1, 1);
+    CM_bg_puts("TITLE_DRAW()", 0, 2, 1);
 
     CM_sp_set(0, 50, 50, 0x0140, 3);
 //					*ｄ１＝スプライトプレーン番号（０～１２７）
@@ -47,7 +50,7 @@ void Title_Draw(void)
 void Title_VSync(void)
 {
 //    printf(" Title_VSync()\n");
-    CM_bg_puts("TITLE_VSYNC()", 0, 2, 1);
+    CM_bg_puts("TITLE_VSYNC()", 0, 3, 1);
 }
 
 // タイトルシーン　クリア（終了）

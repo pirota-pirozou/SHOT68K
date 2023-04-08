@@ -41,7 +41,7 @@ enum
 // プロトタイプ宣言
 void SceneManager_Init(void);
 void SceneManager_ChangeScene(int);
-void SceneManager_Regist(pSSceneWork scene);
+void SceneManager_Regist(const SSceneWork *);
 void Scene_Init(void);
 void Scene_Update(void);
 void Scene_Draw(void);
