@@ -9,6 +9,7 @@
 void Game_Init(void)
 {
 //    printf("Game_Init() ");
+    OBJManager_Init();      // オブジェクトマネージャーの初期化
     BGTEXTCL(1, 0x0100);	// BGTEXT1 CLR
 }
 
@@ -52,5 +53,5 @@ void Game_VSync(void)
 // ゲームシーン　クリア（終了）
 void Game_Clear(void)
 {
-//    printf("**Game_Clear()\n");
+    ObjManager_End();       // オブジェクトマネージャーの終了
 }
