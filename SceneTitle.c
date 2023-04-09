@@ -12,7 +12,8 @@ extern int hiscore;                // ハイスコア
 void Title_Init(void)
 {
 //    printf("Title_Init() ");
-    BGTEXTCL(1, 0x0100);	// BGTEXT1 CLR
+    CM_sprite_clr();            // スプライトクリア
+    BGTEXTCL(1, 0x0100);	    // BGTEXT1 CLR
 }
 
 // タイトルシーン　更新

@@ -26,6 +26,7 @@ extern "C" {
 // プロトタイプ宣言
 void CM_sprite_on(void);
 void CM_sprite_off(void);
+void CM_sprite_clr(void);
 void CM_vsync(void);
 void CM_sp_set32(int, int, int, int, int);
 //					*ｄ１＝スプライトプレーン番号（０～１２７）

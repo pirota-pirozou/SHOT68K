@@ -19,6 +19,7 @@
 	.xdef	int_cou
 
         * 関数定義
+	.xdef _CM_sprite_clr
         .xdef _CM_sprite_on
         .xdef _CM_sprite_off
         .xdef _CM_vsync
@@ -179,6 +180,19 @@ _CM_vsync:
 *	beq	@b
 
 *	ori.b	#$02,$EB0808			* SP_DISP ON
+	rts
+
+* スプライトクリア
+* void CM_sprite_clr(void);
+_CM_sprite_clr:
+*	lea	$EB0006,a0
+	lea.l	sprtbl+6,a0
+	moveq	#127,d0
+@@:
+	clr.w	(a0)
+	addq.l	#8,a0
+	dbra	d0,@b
+
 	rts
 
 *************************************

@@ -42,6 +42,8 @@ enum
 typedef struct _tObj SObj;
 typedef void (*ObjFuncPtr)(SObj *);
 
+/// @brief オブジェクトの基本構造体
+/// @note 全部のオブジェクトでこの構造体を使用する
 struct _tObj
 {
     uint16 id;              // オブジェクトID
@@ -57,6 +59,7 @@ struct _tObj
 };
 typedef SObj* pSObj;
 
+#if 0
 /// @brief プレイヤーの構造体
 typedef struct
 {
@@ -88,6 +91,7 @@ typedef struct
 
     uint8  padding[128-20]; // 128バイトになるようにパディング
 } SObjPBullet, *pSObjPBullet;
+#endif // 0
 
 // プロトタイプ宣言
 void OBJManager_Init();

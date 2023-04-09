@@ -25,12 +25,13 @@ static void addScore(int);
 // ゲームシーン　初期化
 void Game_Init(void)
 {
-    OBJManager_Init();      // オブジェクトマネージャーの初期化
-    BGTEXTCL(1, 0x0100);	// BGTEXT1 CLR
+    OBJManager_Init();          // オブジェクトマネージャーの初期化
+    CM_sprite_clr();            // スプライトクリア
+    BGTEXTCL(1, 0x0100);	    // BGTEXT1 CLR
     CM_bg_puts("SCORE", 0, 0, 1);
     CM_bg_puts("HI", 19, 0, 1);
-    bPause = FALSE;         // ポーズフラグをクリア
-    score = 0;              // スコアをクリア
+    bPause = FALSE;             // ポーズフラグをクリア
+    score = 0;                  // スコアをクリア
     bgDraw_flg = BGDRAW_FLG_SCORE | BGDRAW_FLG_HISCORE; // BG書き換えフラグをセット
 
     // プレイヤーの生成
