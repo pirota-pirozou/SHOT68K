@@ -26,8 +26,30 @@ typedef struct
     FuncPtr0 Clear;
 } SSceneWork, *pSSceneWork;
 
-// 最大シーン数
-//#define SCENE_MAX 10
+// 便利なマクロ
+#define clamp(value,min,max)                        \
+    ((value) < (min)) ? (min)                       \
+                      : ((value) > (max)) ? (max) : (value)
+
+#undef max
+#define max(x,y) \
+       ({ typeof (x) _x = (x); \
+           typeof (y) _y = (y); \
+         _x > _y ? _x : _y; })
+
+#undef min
+#define min(x,y) \
+       ({ typeof (x) _x = (x); \
+           typeof (y) _y = (y); \
+         _x < _y ? _x : _y; })
+
+#define abs(x) \
+       ({ typeof (x) _x = (x); \
+         _x < 0 ? -_x : _x; })
+
+#define sgn(x) \
+       ({ typeof (x) _x = (x); \
+         _x < 0 ? -1 : 1; })
 
 // シーンID
 enum
