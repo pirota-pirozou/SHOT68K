@@ -18,4 +18,9 @@ void Game_VSync(void);
 // ゲームシーン　クリア（終了）
 void Game_Clear(void);
 
+// オブジェクトの更新
+void ObjFunc_Player(pSObj pObj);
+
+
+
 #endif // __SCENE_GAME_H__

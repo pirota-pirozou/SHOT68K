@@ -104,6 +104,37 @@ void Game_Clear(void)
     ObjManager_End();       // オブジェクトマネージャーの終了
 }
 
+// ObjManagerから呼ばれる関数は、SceneGame 内に移動した。
+
+/////////////////////////////////
+// プレイヤーの更新処理
+/////////////////////////////////
+// @brief プレイヤーの更新処理
+// @param pObj プレイヤーのオブジェクト
+void ObjFunc_Player(pSObj pObj)
+{
+    // ゲームパッドの値を取得
+    unsigned short pad = GamePadManager_GetPad();
+    unsigned short pad_trg = GamePadManager_GetTrigger();
+
+    // 移動
+    int16 vx = 0;
+    if ((pad_trg & PAD_START)==PAD_START)
+    {
+        // STARTボタンは無効
+    }
+    else if (pad & PAD_LEFT)
+    {
+        vx = -2;
+    }
+    else if (pad & PAD_RIGHT)
+    {
+        vx = 2;
+    }
+    pObj->x = clamp(pObj->x+vx, 8, 256-16-8);
+
+}
+
 //////////////////////////////////////
 // ポーズフラグの設定
 /// @param[in] flg ポーズフラグ
