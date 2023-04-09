@@ -66,7 +66,7 @@ regs	reg	d3-d7/a3-a5
 	IOCS	_B_LPEEK
 
 *	cmpi.l	#$00FF0000,d0
-	bra	@f
+	bra.s	@f
 *	bcs	@f		* 飛び先がＲＯＭでない
 
 	*** ミュージックドライバが登録されてない ****
@@ -108,7 +108,8 @@ regs	reg	d3-d7/a3-a5
 	lea.l	18(sp),sp
 *	-------------------
 
-	clr.l	-(sp)
+	moveq	#0,d1
+	move.l	d1,-(sp)
 	DOS	_SUPER			* スーパーバイザ・モードへ
 	addq.l	#4,sp
 	lea.l	uspbuf,a1
@@ -141,7 +142,7 @@ regs	reg	d3-d7/a3-a5
 	DOS	_CONCTRL		* ファンクション消去
 	addq.l	#4,sp
 
-	jbsr	_TX_CLS			* TEXT クリア
+	bsr	_TX_CLS			* TEXT クリア
 
 	moveq	#0,d1
 	moveq	#2,d2			* Ｇ－ＲＡＭは、アプリで使用中
@@ -183,13 +184,15 @@ regs	reg	d3-d7/a3-a5
 	*
 	lea.l	SP_SCR+6,a0			* ＳＰスクロールレジスタ　初期化
 	moveq	#127,d0
+	moveq	#0,d1
 spcl_loop:
-	clr.w	(a0)				* プライオリティ：0 （非表示）
+	move.w  d1,(a0)				* プライオリティ：0 （非表示）
+*	clr.w	(a0)				* プライオリティ：0 （非表示）
 	addq.l	#8,a0
 	dbra	d0,spcl_loop
 
-	clr.l	BG0_SCRX			* ＢＧ０スクロール 0,0
-	clr.l	BG1_SCRX			* ＢＧ１スクロール 0,0
+	move.l	d1,BG0_SCRX			* ＢＧ０スクロール 0,0
+	move.l	d1,BG1_SCRX			* ＢＧ１スクロール 0,0
 
 	* グラフィック優先順位
 crtmode = %00000_001				* 256Colors
@@ -213,7 +216,7 @@ crtmode = %00000_001				* 256Colors
 _super_end:
 regs	reg	d3-d7/a3-a5
 	movem.l regs,-(sp)
-	jbsr	_TX_CLS
+	bsr	_TX_CLS
 
 	move.b	#$08,$E8E007		* ＨＲＬをクリア
 
@@ -247,7 +250,9 @@ regs	reg	d3-d7/a3-a5
 	IOCS	_OS_CURON
 
 	**** メモリ開放 ****
-	clr.l	-(sp)
+	moveq	#0,d1
+	move.l	d1,-(sp)
+*	clr.l	-(sp)
 	DOS	_MFREE
 	addq.l	#4,sp
 
@@ -272,7 +277,7 @@ reglist	reg	d3-d7
 	swap	d0
 	lea	GRAM+$80000,a0
 	adda.l	d0,a0
-	move.l	#$800,d7
+	move.l	#$800-1,d7		* 2023/04/10 -1 するのを忘れていた
 	moveq	#0,d0
 	moveq	#0,d1
 	moveq	#0,d2
@@ -307,8 +312,8 @@ _gamepad:
 	moveq	#0,d1
 	IOCS	_JOYGET			;ジョイスティック０　チェック
 	eori.b	#$FF,d0			;反転
-	bne	@f
-	jbsr	kbchk0			;キーボード・チェック
+	bne.s	@f
+	bsr	kbchk0			;キーボード・チェック
 @@:
 	andi.l	#$FF,d0			;ジョイスティック０　ＦＬＡＧ
 	rts
@@ -326,11 +331,11 @@ kbchk0:
 	move.w	#8,d1
 	IOCS	_BITSNS			;
 	btst.l	#7,d0			;チェック　”４”
-	beq	st0_01
+	beq.s	st0_01
 	ori.b	#4,d2			;ＬＥＦＴ　ＦＬＡＧ
 st0_01:
 	btst.l	#4,d0			;チェック  ”８”
-	beq	st0_02
+	beq.s	st0_02
 	ori.b	#1,d2			;ＵＰ　ＦＬＡＧ
 st0_02:
 
@@ -339,35 +344,35 @@ st0_11:
 	move.w	#9,d1
 	IOCS	_BITSNS			;
 	btst.l	#4,d0			;チェック　”２”
-	beq	st0_12
+	beq.s	st0_12
 	ori.b	#2,d2			;ＤＯＷＮ　ＦＬＡＧ
 st0_12:
 	btst.l	#1,d0			;チェック　”６”
-	beq	st0_13
+	beq.s	st0_13
 	ori.b	#8,d2
 st0_13:
 	*** ボタン　決定 ***
 	btst.l	#6,d0			;チェック　”ENTER”
-	bne	st0_trg1
+	bne.s	st0_trg1
 
 st0_21:
 	move.w	#5,d1
 	IOCS	_BITSNS			;
 	btst.l	#2,d0			;チェック　”Ｚ”
-	beq	st0_22
+	beq.s	st0_22
 	ori.b	#64,d2			;ＴＲＧ－２
 st0_22:
 	btst.l	#3,d0			;チェック　”Ｘ”
-	beq	st0_23
+	beq.s	st0_23
 st0_trg1:
 	ori.b	#32,d2			;ＴＲＧ－１
-	bra	st0_ret
+	bra.s	st0_ret
 	****************
 st0_23:
 	move.w	#6,d1
 	IOCS	_BITSNS			;チェック　”ＳＰＣ”
 	btst.l	#5,d0
-	bne	st0_trg1
+	bne.s	st0_trg1
 
 *	------------------
 st0_ret:
@@ -381,35 +386,38 @@ st0_ret:
 *                                          *
 *         　ＴＸ＿ＣＬＳ                   *
 ********************************************
-*	Ｉｎ：ナシ
-*	破壊：ナシ
-*
 *	TX_CLS();
 _TX_CLS:
-	push	d0-d3/a0
+	move.l	d3,-(sp)
 	lea	TEXTRAM,a0
+	move.l	#$20000,d1
 
 	moveq	#128-1,d0
-KESU_loop:
-	move.l	a0,-(sp)
-	clr.l	(a0)
-	adda.l	#$20000,a0
-	clr.l	(a0)
-	adda.l	#$20000,a0
-	clr.l	(a0)
-	adda.l	#$20000,a0
-	clr.l	(a0)
+	moveq	#0,d2
+@@:
+	movea.l	a0,a1
+*	clr.l	(a0)
+	move.l	d2,(a0)			* clr.l より高速
+	adda.l	d1,a0
+*	clr.l	(a0)
+	move.l	d2,(a0)			* clr.l より高速
+	adda.l	d1,a0
+*	clr.l	(a0)
+	move.l	d2,(a0)			* clr.l より高速
+	adda.l	d1,a0
+*	clr.l	(a0)
+	move.l	d2,(a0)			* clr.l より高速
 
-	move.l	(sp)+,a0
+	movea.l	a1,a0
 	addq.l	#4,a0
-	dbra	d0,KESU_loop
+	dbra	d0,@b
 
 	move.w	#$00_01,d1
 	move.w	#256-1,d2
 	moveq	#$00_0F,d3
 	IOCS	_TXRASCPY
 
-	pop	d0-d3/a0
+	move.l	(sp)+,d3
 	rts
 
 *	-------------------------	* ダミーの割り込み処理アドレス
@@ -418,9 +426,9 @@ KESU_loop:
 *	-------------------------
 nmi:
 	cmpi.w	#$001F,d7		* ＮＭＩリセットが、かかったか？
-	beq	nmi2
+	beq.s	nmi2
 	cmpi.w	#$301F,d7		* ＮＭＩリセットが、かかったか？
-	beq	nmi2
+	beq.s	nmi2
 
 	pea	_PRG_QUIT		* アボートベクタをセットする
 	move.w	#$FFF2,-(sp)
@@ -442,10 +450,10 @@ dumint:
 	* void vsync(void);
 _vsync:
 	btst.b	#4,$E88001		* 垂直帰線期間中は待つ
-	beq	_vsync
+	beq.s	_vsync
 @@:
 	btst.b	#4,$E88001		* 垂直表示期間は待つ
-	bne	@b
+	bne.s	@b
 	rts
 
 	.end

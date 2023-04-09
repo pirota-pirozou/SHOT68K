@@ -124,7 +124,7 @@ _CM_sprite_on:
 	move	(sp)+,sr		* 割り込み禁止状態の解除
 
 	tst.l	d0
-	beq	@f
+	beq.s	@f
 	* Error
 	moveq.l	#-1,d0
 	rts
@@ -162,7 +162,7 @@ sprite_int:
 
 @@:	* DMA終了待ち
 	tst.w	MTC2
-	bne	@b
+	bne.s	@b
 
 	move.b	#1,sp_ready
 	rte
@@ -173,11 +173,11 @@ sprite_int:
 _CM_vsync:
 @@:	* 垂直同期割り込み待ち
 	tst.b  sp_ready
-	beq	@b
+	beq.s	@b
 	move.b	#0,sp_ready
 @@:
 *	btst.b	#4,$E88001			* 垂直帰線期間中は待つ
-*	beq	@b
+*	beq.s	@b
 
 *	ori.b	#$02,$EB0808			* SP_DISP ON
 	rts
@@ -188,8 +188,9 @@ _CM_sprite_clr:
 *	lea	$EB0006,a0
 	lea.l	sprtbl+6,a0
 	moveq	#127,d0
+	moveq	#0,d1
 @@:
-	clr.w	(a0)
+	move.w	d1,(a0)
 	addq.l	#8,a0
 	dbra	d0,@b
 
@@ -220,10 +221,10 @@ reglist reg     d3-d6
 
 	lea.l	notable,a1
 	btst	#14,d4
-	beq	@f
+	beq.s	@f
 	addq.l	#8,a1
 @@:	btst.l	#15,d4
-	beq	@f
+	beq.s	@f
 	lea.l	16(a1),a1
 @@:	move.l	d4,d6			*ｄ4の退避
 
@@ -321,7 +322,7 @@ reglist reg     d3-d5
 					*ｄ４＝パターンコード
 	lea.l	$EBC000,a0
 	tst.w	d1
-	beq	@f
+	beq.s	@f
 
 	lea.l	$2000(a0),a0
 @@:
@@ -339,11 +340,11 @@ reglist reg     d3-d5
 
 	lea.l	notable2,a1
 	btst.l	#14,d4
-	beq	@f
+	beq.s	@f
 	addq.l	#8,a1
 @@:
 	btst.l	#15,d4
-	beq	@f
+	beq.s	@f
 	lea.l	16(a1),a1
 @@:
 	move.w	d4,d5			*ｄ4の退避
@@ -355,7 +356,8 @@ reglist reg     d3-d5
 	add.w	(a1)+,d4
 	move.w	d4,(a0)+
 
-	adda.l	#124,a0			*a0=a0+((64-2)*2)
+*	adda.l	#124,a0			*a0=a0+((64-2)*2)
+	lea.l	124(a0),a0		*a0=a0+((64-2)*2)
 
 	move.w	d5,d4
 	add.w	(a1)+,d4
@@ -387,7 +389,7 @@ reglist	reg	d3
 
 	lea.l	$EBC000,a0
 	tst.w	d1
-	beq	@f
+	beq.s	@f
 
 	lea.l	$2000(a0),a0
 @@:
@@ -397,9 +399,11 @@ reglist	reg	d3
 	lsl.w	#8,d3
 	adda.l	d3,a0			*a0=a0+(y*256)
 
-	clr.l	(a0)+
+	moveq	#0,d0
+*	clr.l	(a0)+
+	move.l	d0,(a0)+
 	lea.l	124(a0),a0
-	clr.l	(a0)
+	move.l	d0,(a0)
 
         move.l	(sp)+,reglist
 	unlk	a6
@@ -416,7 +420,7 @@ reglist	reg	d3
 _CM_dma32:
 @@:     * DMA転送終了待ち
 	tst.w	MTC2
-	bne	@b
+	bne.s	@b
 
 	link	a6,#0
 *reglist reg     d3-d6
@@ -444,7 +448,7 @@ _CM_dma32:
         * void CM_wait_dma_end(void);
 _CM_wait_dma_end:
 	tst.w	MTC2
-	bne	_CM_wait_dma_end
+	bne.s	_CM_wait_dma_end
 	rts
 
 	************************
@@ -474,7 +478,7 @@ _CM_def_px2:
 	move.l	#12288-1,d0
 @@:
 	move.w	(a0)+,(a2)+
-	dbra	d0, @b
+	dbra	d0,@b
 
 	unlk	a6
 	rts
@@ -483,10 +487,10 @@ _CM_def_px2:
 	**** グラフィックパレット定義 ****
 	*******************************
 	* void CM_def_grp_palette((unsigned short *) grppal_buf);
-        * pe2pal_buf : PE2パレットデータのアドレス
+        * pe2pal_buf : グラフィックパレットデータのアドレス
 _CM_def_grp_palette:
 	movea.l	4(sp),a1
-	lea	GRPPAL,a0
+	lea.l	GRPPAL,a0
 
         * グラフィックパレット定義
 	moveq	#127,d0
@@ -499,7 +503,7 @@ _CM_def_grp_palette:
 _CM_bg_puts:
 	link	a6,#0
 reglist reg     d3
-	push	reglist
+	move.l	reglist,-(sp)
 
 	move.l	8(a6),a0		* a0=文字列アドレス
 	move.l	12(a6),d1		* X座標
@@ -518,12 +522,12 @@ reglist reg     d3
 
 @@:	move.w	d3,d0
 	move.b	(a0)+,d0
-	beq	@f			* 終端まできたら終了
+	beq.s	@f			* 終端まできたら終了
 
 	subi.b	#$20,d0			* 文字コードを補正
 	move.w  d0,(a1)+		* 文字コードを書き込む
 	bra.s	@b
 @@:
-	pop	reglist
+	move.l	(sp)+,reglist
 	unlk	a6
 	rts
