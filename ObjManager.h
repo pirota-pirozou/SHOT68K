@@ -11,7 +11,9 @@
 #include <doslib.h>
 #include <iocslib.h>
 #include "types.h"
+
 #include "GamePadManager.h"
+#include "SceneManager.h"
 #include "CMSprite.h"
 
 // オブジェクトの最大数

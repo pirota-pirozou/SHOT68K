@@ -16,6 +16,7 @@ int hiscore = 0;                // ハイスコア
 
 static BOOL bPause = FALSE;     // ポーズフラグ
 static uint32 bgDraw_flg;       // BG書き換えフラグ
+static pSObj pObjPlayer;        // プレイヤーのオブジェクト
 
 // プロトタイプ宣言
 static void SetPause(BOOL);
@@ -31,6 +32,9 @@ void Game_Init(void)
     bPause = FALSE;         // ポーズフラグをクリア
     score = 0;              // スコアをクリア
     bgDraw_flg = BGDRAW_FLG_SCORE | BGDRAW_FLG_HISCORE; // BG書き換えフラグをセット
+
+    // プレイヤーの生成
+    pObjPlayer = ObjManager_Make(OBJ_ID_PLAYER, 128, 256-16);
 }
 
 // ゲームシーン　更新
@@ -68,7 +72,7 @@ void Game_Draw(void)
 {
     CM_bg_puts("GAME_DRAW()", 0, 2, 1);
     ObjManager_Draw();      // オブジェクトマネージャーの描画
-    CM_sp_set(0, 16, 16, 0x0141, 3);
+//    CM_sp_set(0, 16, 16, 0x0141, 3);
 
 }
 

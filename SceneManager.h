@@ -27,9 +27,11 @@ typedef struct
 } SSceneWork, *pSSceneWork;
 
 // ï÷óòÇ»É}ÉNÉç
-#define clamp(value,min,max)                        \
-    ((value) < (min)) ? (min)                       \
-                      : ((value) > (max)) ? (max) : (value)
+#define clamp(value,min,max) \
+    ({ typeof (value) _value = (value); \
+       typeof (min) _min = (min); \
+       typeof (max) _max = (max); \
+       _value < _min ? _min : _value > _max ? _max : _value; })
 
 #undef max
 #define max(x,y) \
