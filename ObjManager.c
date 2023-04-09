@@ -39,6 +39,16 @@ void OBJManager_Init()
 }
 
 /////////////////////////////////
+// ＯＢＪマネージャー：取得処理
+/////////////////////////////////
+/// @brief オブジェクトのポインタを取得する
+/// @param i オブジェクトのインデックス
+pSObj ObjManager_GetObj(int i)
+{
+    return &g_pObj[i];
+}
+
+/////////////////////////////////
 // ＯＢＪマネージャー：更新処理
 /////////////////////////////////
 void ObjManager_Update()
@@ -83,7 +93,7 @@ void ObjManager_End()
 /////////////////////////////////
 // ＯＢＪマネージャー：Ｍａｋｅ
 /////////////////////////////////
-pSObj ObjManager_Make(int id, int x, int y)
+pSObj ObjManager_Make(int _id, int _x, int _y)
 {
     pSObj pObj = NULL;
 
@@ -104,13 +114,13 @@ pSObj ObjManager_Make(int id, int x, int y)
     }
 
     // オブジェクトの初期化
-    pObj->id = id;
-    pObj->x = x;
-    pObj->y = y;
+    pObj->id = _id;
+    pObj->x = _x;
+    pObj->y = _y;
     pObj->pat = 0;
     pObj->Update = ObjFunc_Null;
 
-    switch (id)
+    switch (_id)
     {
         // プレイヤー
     case OBJ_ID_PLAYER:
@@ -121,6 +131,7 @@ pSObj ObjManager_Make(int id, int x, int y)
         // プレイヤーの弾
     case OBJ_ID_PBULLET:
         pObj->pat = 0x0141;         // 自機ショットパターン
+        pObj->Update = ObjFunc_PBullet;  // 更新処理
         pObj->Draw = ObjFunc_Draw;  // 描画標準
         break;
         // 敵の弾

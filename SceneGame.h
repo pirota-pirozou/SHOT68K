@@ -20,6 +20,7 @@ void Game_Clear(void);
 
 // オブジェクトの更新
 void ObjFunc_Player(pSObj pObj);
+void ObjFunc_PBullet(pSObj pObj);
 
 
 

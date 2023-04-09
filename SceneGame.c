@@ -4,6 +4,7 @@
 //
 
 #include "SceneGame.h"
+#include "ObjManager.h"
 
 #define PAUSE_X 13
 #define PAUSE_Y 15
@@ -17,6 +18,7 @@ int hiscore = 0;                // ハイスコア
 static BOOL bPause = FALSE;     // ポーズフラグ
 static uint32 bgDraw_flg;       // BG書き換えフラグ
 static pSObj pObjPlayer;        // プレイヤーのオブジェクト
+static pSObj pObjBullet;        // プレイヤーの弾のオブジェクト
 
 // プロトタイプ宣言
 static void SetPause(BOOL);
@@ -32,6 +34,7 @@ void Game_Init(void)
     CM_bg_puts("HI", 19, 0, 1);
     bPause = FALSE;             // ポーズフラグをクリア
     score = 0;                  // スコアをクリア
+    pObjBullet = NULL;          // プレイヤーの弾のオブジェクトをクリア
     bgDraw_flg = BGDRAW_FLG_SCORE | BGDRAW_FLG_HISCORE; // BG書き換えフラグをセット
 
     // プレイヤーの生成
@@ -53,14 +56,15 @@ void Game_Update(void)
 
     if (bPause) return;     // ポーズ中は処理しない
 
-    CM_bg_puts("GAME_UPDATE()", 0, 1, 1);
+//    CM_bg_puts("GAME_UPDATE()", 0, 1, 1);
     ObjManager_Update();    // オブジェクトマネージャーの更新
-
+/*
     if (pad_trg & PAD_B)
     {
         // Bボタンでスコアを加算テスト
         addScore(100);
     }
+ */
     if (pad_trg & PAD_A)
     {
         // Aボタンでタイトルシーンへ遷移
@@ -71,10 +75,8 @@ void Game_Update(void)
 // ゲームシーン　描画
 void Game_Draw(void)
 {
-    CM_bg_puts("GAME_DRAW()", 0, 2, 1);
+//    CM_bg_puts("GAME_DRAW()", 0, 2, 1);
     ObjManager_Draw();      // オブジェクトマネージャーの描画
-//    CM_sp_set(0, 16, 16, 0x0141, 3);
-
 }
 
 // ゲームシーン　VSync
@@ -95,7 +97,7 @@ void Game_VSync(void)
         CM_bg_puts(strtmp, 22, 0, 1);
         bgDraw_flg &= ~BGDRAW_FLG_HISCORE;
     }
-    CM_bg_puts("GAME_VSYNC()", 0, 3, 1);
+//    CM_bg_puts("GAME_VSYNC()", 0, 3, 1);
 }
 
 // ゲームシーン　クリア（終了）
@@ -117,7 +119,7 @@ void ObjFunc_Player(pSObj pObj)
     unsigned short pad = GamePadManager_GetPad();
     unsigned short pad_trg = GamePadManager_GetTrigger();
 
-    // 移動
+    // 移動判定
     int16 vx = 0;
     if ((pad_trg & PAD_START)==PAD_START)
     {
@@ -131,7 +133,61 @@ void ObjFunc_Player(pSObj pObj)
     {
         vx = 2;
     }
+    // 移動
     pObj->x = clamp(pObj->x+vx, 8, 256-16-8);
+
+    // 弾発射判定
+    if (pad_trg & PAD_B)
+    {
+        // Bボタンで弾発射
+        if (pObjBullet == NULL)
+        {
+            pObjBullet = ObjManager_Make(OBJ_ID_PBULLET,
+                pObj->x, pObj->y-2);
+        }
+    }
+
+}
+
+/////////////////////////////////
+// 自機弾の更新処理
+/////////////////////////////////
+// @brief 自機弾の更新処理
+// @param pObj 自機弾のオブジェクト
+void ObjFunc_PBullet(pSObj pObj)
+{
+    pObj->y -= 8;
+    if (pObj->y <= 0)
+    {
+        // 画面外に出たら消滅
+        ObjManager_Destroy(pObj);
+        pObjBullet = NULL;          // 出現フラグもクリア
+    }
+
+    // 自機弾と敵との当たり判定
+    for (int i = 0; i < OBJ_MAX; i++)
+    {
+        pSObj pObj2 = ObjManager_GetObj(i);
+        if (pObj2->id >= OBJ_ID_ENEMY1 &&
+            pObj2->id <= OBJ_ID_ENEMY3)
+        {
+            // 敵との当たりチェック
+            int16 cx = abs(pObj->x - pObj2->x);
+            int16 cy = abs(pObj->y - pObj2->y);
+
+            if (cx < 16 && cy < 16)
+            {
+                // 当たった
+                ObjManager_Destroy(pObj);      // 自機弾を消滅
+                pObjBullet = NULL;             // 出現フラグもクリア
+                ObjManager_Destroy(pObj2);     // 敵を消滅
+                // TODO: 爆発エフェクト
+                // TODO: 敵ごとのスコア加算
+                addScore(100);                  // スコア加算
+                break;
+            }
+        }
+    }
 
 }
 

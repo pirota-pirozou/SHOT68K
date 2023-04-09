@@ -47,8 +47,8 @@ typedef void (*ObjFuncPtr)(SObj *);
 struct _tObj
 {
     uint16 id;              // オブジェクトID
-    uint16 x;               // X座標
-    uint16 y;               // Y座標
+    int16 x;                // X座標
+    int16 y;                // Y座標
     uint16 pat;             // パターン番号
     uint16 plane;           // プレーン番号
     uint16 pad0;
@@ -96,6 +96,7 @@ typedef struct
 // プロトタイプ宣言
 void OBJManager_Init();
 pSObj ObjManager_Make(int id, int x, int y);
+pSObj ObjManager_GetObj(int i);
 void ObjManager_Update();
 void ObjManager_Draw();
 void ObjManager_End();
