@@ -14,6 +14,7 @@ static void ObjFunc_Draw(pSObj pObj);
 /////////////////////////////////
 // ＯＢＪマネージャー自体の初期化
 /////////////////////////////////
+/// @retval なし
 void OBJManager_Init()
 {
     // オブジェクトのメモリを確保
@@ -43,6 +44,7 @@ void OBJManager_Init()
 /////////////////////////////////
 /// @brief オブジェクトのポインタを取得する
 /// @param i オブジェクトのインデックス
+/// @retval オブジェクトのポインタ
 pSObj ObjManager_GetObj(int i)
 {
     return &g_pObj[i];
@@ -51,6 +53,7 @@ pSObj ObjManager_GetObj(int i)
 /////////////////////////////////
 // ＯＢＪマネージャー：更新処理
 /////////////////////////////////
+/// @retval なし
 void ObjManager_Update()
 {
     // オブジェクトの更新
@@ -67,6 +70,7 @@ void ObjManager_Update()
 /////////////////////////////////
 // ＯＢＪマネージャー：描画処理
 /////////////////////////////////
+/// @retval なし
 void ObjManager_Draw()
 {
     // オブジェクトの描画
@@ -83,6 +87,7 @@ void ObjManager_Draw()
 /////////////////////////////////
 // ＯＢＪマネージャー：終了処理
 /////////////////////////////////
+/// @retval なし
 void ObjManager_End()
 {
     // オブジェクトのメモリを解放
@@ -93,6 +98,11 @@ void ObjManager_End()
 /////////////////////////////////
 // ＯＢＪマネージャー：Ｍａｋｅ
 /////////////////////////////////
+/// @brief オブジェクトを作成する
+/// @param _id オブジェクトのＩＤ
+/// @param _x  オブジェクトのＸ座標
+/// @param _y  オブジェクトのＹ座標
+/// @retval オブジェクトのポインタ
 pSObj ObjManager_Make(int _id, int _x, int _y)
 {
     pSObj pObj = NULL;
@@ -178,6 +188,9 @@ pSObj ObjManager_Make(int _id, int _x, int _y)
 /////////////////////////////////
 // ＯＢＪマネージャー：Destroy
 /////////////////////////////////
+/// @brief オブジェクトを破棄する
+/// @param pObj オブジェクトのポインタ
+/// @retval なし
 void ObjManager_Destroy(pSObj pObj)
 {
     pObj->id = OBJ_ID_EMPTY;
@@ -187,15 +200,18 @@ void ObjManager_Destroy(pSObj pObj)
 }
 
 /////////////////////////////////
-// 何もしない関数
+/// @brief 何もしない関数
 /////////////////////////////////
+/// @retval なし
 static volatile void ObjFunc_Null(pSObj pObj)
 {
 }
 
-/////////////////////////////////
-// スプライトの描画（デフォルト）
-/////////////////////////////////
+////////////////////////////////////////
+/// @brief スプライトの描画（デフォルト）
+////////////////////////////////////////
+/// @param pObj オブジェクトのポインタ
+/// @retval なし
 static void ObjFunc_Draw(pSObj pObj)
 {
     // スプライト表示 X,Y 座標が16,16 ずつずれているので注意

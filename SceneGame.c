@@ -150,10 +150,11 @@ void ObjFunc_Player(pSObj pObj)
 }
 
 /////////////////////////////////
-// 自機弾の更新処理
+/// 自機弾の更新処理
 /////////////////////////////////
-// @brief 自機弾の更新処理
-// @param pObj 自機弾のオブジェクト
+/// @brief 自機弾の更新処理
+/// @param pObj 自機弾のオブジェクト
+/// @retval なし
 void ObjFunc_PBullet(pSObj pObj)
 {
     pObj->y -= 8;
@@ -167,20 +168,20 @@ void ObjFunc_PBullet(pSObj pObj)
     // 自機弾と敵との当たり判定
     for (int i = 0; i < OBJ_MAX; i++)
     {
-        pSObj pObj2 = ObjManager_GetObj(i);
-        if (pObj2->id >= OBJ_ID_ENEMY1 &&
-            pObj2->id <= OBJ_ID_ENEMY3)
+        pSObj pObjEnemy = ObjManager_GetObj(i);
+        if (pObjEnemy->id >= OBJ_ID_ENEMY1 &&
+            pObjEnemy->id <= OBJ_ID_ENEMY3)
         {
             // 敵との当たりチェック
-            int16 cx = abs(pObj->x - pObj2->x);
-            int16 cy = abs(pObj->y - pObj2->y);
+            int16 cx = abs(pObj->x - pObjEnemy->x);
+            int16 cy = abs(pObj->y - pObjEnemy->y);
 
             if (cx < 16 && cy < 16)
             {
                 // 当たった
                 ObjManager_Destroy(pObj);      // 自機弾を消滅
                 pObjBullet = NULL;             // 出現フラグもクリア
-                ObjManager_Destroy(pObj2);     // 敵を消滅
+                ObjManager_Destroy(pObjEnemy); // 敵を消滅
                 // TODO: 爆発エフェクト
                 // TODO: 敵ごとのスコア加算
                 addScore(100);                  // スコア加算
@@ -192,7 +193,7 @@ void ObjFunc_PBullet(pSObj pObj)
 }
 
 //////////////////////////////////////
-// ポーズフラグの設定
+/// @brief ポーズフラグの設定
 /// @param[in] flg ポーズフラグ
 /// @retval なし
 //////////////////////////////////////
