@@ -11,6 +11,8 @@
 
 #define BGDRAW_FLG_SCORE 0x0001    // スコアの書き換えフラグ
 #define BGDRAW_FLG_HISCORE 0x0002  // ハイスコアの書き換えフラグ
+#define BGDRAW_FLG_LEFT 0x0004  // 残機の書き換えフラグ
+#define BGDRAW_FLG_STAGE 0x0008  // ステージの書き換えフラグ
 
 int score = 0;                  // スコア
 int hiscore = 0;                // ハイスコア
@@ -22,10 +24,34 @@ static pSObj pObjBullet;        // プレイヤーの弾のオブジェクト
 
 static int enemy_left;          // 敵の残り数
 
+// ゲーム状態の管理用
+enum
+{
+    STATUS_NORMAL,              // （通常）ゲーム中
+    STATUS_MISS,                // ミス
+    STATUS_CLEAR,               // ステージクリア
+    STATUS_GAMEOVER,            // ゲームオーバー
+    STATUS_MAX                  // 状態の最大値
+};
+static int status;              // ゲーム状態
+static int status_count;        // 状態遷移カウンタ
+
+// 敵の動作　管理用
+static int enemy_move_speed;    // 敵の動作速度
+static int enemy_move_count;    // 敵の動作カウンタ
+static int16 enemy_move_vx;     // 敵の動作方向
+static int16 enemy_wall_touch;  // 敵の壁接触フラグ
+static int stage;               // ステージ
+static int player_left;         // 残機
+
 // プロトタイプ宣言
 static void SetPause(BOOL);
 static void addScore(int);
 static void setupEnemies(void);
+static void to_next_stage(void);
+static void obj_clear_all(void);
+static void initStage(void);
+
 
 
 // ゲームシーン　初期化
@@ -36,10 +62,25 @@ void Game_Init(void)
     BGTEXTCL(1, 0x0100);	    // BGTEXT1 CLR
     CM_bg_puts("SCORE", 0, 0, 1);
     CM_bg_puts("HI", 19, 0, 1);
+    CM_bg_puts("LEFT", 0, 31, 1);
+    CM_bg_puts("STAGE", 31-9, 31, 1);
     bPause = FALSE;             // ポーズフラグをクリア
     score = 0;                  // スコアをクリア
+    stage = 1;                  // ステージは１
+    player_left = 3;            // 残機は３
     pObjBullet = NULL;          // プレイヤーの弾のオブジェクトをクリア
-    bgDraw_flg = BGDRAW_FLG_SCORE | BGDRAW_FLG_HISCORE; // BG書き換えフラグをセット
+    // BG書き換えフラグをセット
+    bgDraw_flg = BGDRAW_FLG_SCORE | BGDRAW_FLG_HISCORE | BGDRAW_FLG_LEFT | BGDRAW_FLG_STAGE;
+
+    // ゲーム状態を初期化
+    status = STATUS_NORMAL;
+    status_count = 0;
+
+    // 敵の動作を初期化
+    enemy_move_speed = 60;
+    enemy_move_count = enemy_move_speed;
+    enemy_move_vx = 1;
+    enemy_wall_touch = 0;
 
     // プレイヤーの生成
     pObjPlayer = ObjManager_Make(OBJ_ID_PLAYER, 128, 256-16);
@@ -62,15 +103,45 @@ void Game_Update(void)
 
     if (bPause) return;     // ポーズ中は処理しない
 
-//    CM_bg_puts("GAME_UPDATE()", 0, 1, 1);
     ObjManager_Update();    // オブジェクトマネージャーの更新
-/*
-    if (pad_trg & PAD_B)
+
+    // ゲーム状態の更新
+    switch (status)
     {
-        // Bボタンでスコアを加算テスト
-        addScore(100);
+    case STATUS_NORMAL:
+        // （通常）ゲーム中
+        break;
+    case STATUS_MISS:
+        // ミス
+        if ((--status_count) <= 0)
+        {
+            // 一定フレーム経過したらゲームオーバー
+            status = STATUS_GAMEOVER;
+            status_count = 60*3;
+        }
+        break;
+    case STATUS_CLEAR:
+        // ステージクリア
+        if ((--status_count) <= 0)
+        {
+            // 一定フレーム経過したら次のステージへ遷移
+            to_next_stage();
+        }
+        break;
+    case STATUS_GAMEOVER:
+        // ゲームオーバー
+        if ((--status_count) <= 0)
+        {
+            //  一定フレーム経過したらタイトルシーンへ遷移
+            SceneManager_ChangeScene(SCENE_ID_TITLE);
+        }
+        break;
+    default:
+        // ここには来ない
+        __UNREACHABLE__;
     }
- */
+
+    // デバッグ用
     if (pad_trg & PAD_A)
     {
         // Aボタンでタイトルシーンへ遷移
@@ -102,6 +173,20 @@ void Game_VSync(void)
         sprintf(strtmp, "%08d", hiscore);
         CM_bg_puts(strtmp, 22, 0, 1);
         bgDraw_flg &= ~BGDRAW_FLG_HISCORE;
+    }
+    if (bgDraw_flg & BGDRAW_FLG_LEFT)
+    {
+        // 残機の書き換え
+        sprintf(strtmp, "%02d", player_left);
+        CM_bg_puts(strtmp, 5, 31, 1);
+        bgDraw_flg &= ~BGDRAW_FLG_LEFT;
+    }
+    if (bgDraw_flg & BGDRAW_FLG_STAGE)
+    {
+        // 残機の書き換え
+        sprintf(strtmp, "%02d", stage);
+        CM_bg_puts(strtmp, 28, 31, 1);
+        bgDraw_flg &= ~BGDRAW_FLG_STAGE;
     }
 //    CM_bg_puts("GAME_VSYNC()", 0, 3, 1);
 }
@@ -187,7 +272,7 @@ void ObjFunc_PBullet(pSObj pObj)
             int16 cx = abs(pObj->x - pObjEnemy->x);
             int16 cy = abs(pObj->y - pObjEnemy->y);
 
-            if (cx < 16 && cy < 16)
+            if (cx < 8 && cy < 8)
             {
                 // 当たった
                 ObjManager_Destroy(pObj);      // 自機弾を消滅
@@ -214,6 +299,13 @@ void ObjFunc_PBullet(pSObj pObj)
                 }
                 ObjManager_Destroy(pObjEnemy);  // 敵を消滅
                 addScore(pts);                  // スコア加算
+                enemy_left--;                   // 敵の残数を減らす
+                if (enemy_left <= 0)
+                {
+                    // 敵の残り数が0になったらステージクリア
+                    status = STATUS_CLEAR;
+                    status_count = 60*3;        // 画面遷移までの時間
+                }
                 break;
             }
         }
@@ -247,7 +339,7 @@ void ObjFunc_EBullet(pSObj pObj)
     int16 cx = abs(pObj->x - pObjPlayer->x);
     int16 cy = abs(pObj->y - pObjPlayer->y);
 
-    if (cx < 16 && cy < 16)
+    if (cx < 12 && cy < 12)
     {
         // 当たった
         //  自機爆発エフェクト
@@ -344,4 +436,61 @@ static void setupEnemies(void)
             enemy_left++;
         }
     }
+}
+
+//////////////////////////////////////
+/// @brief 次のステージへ
+//////////////////////////////////////
+static void to_next_stage(void)
+{
+    stage++;
+    if (stage > 99) stage = 99;
+
+    bgDraw_flg |= BGDRAW_FLG_STAGE;
+
+    // 敵の動作を初期化
+    enemy_move_speed = 60 - (stage * 2);
+    if (enemy_move_speed < 10) enemy_move_speed = 10;
+
+    // ステージの初期化
+    initStage();
+}
+
+//////////////////////////////////////
+/// @brief ステージの初期化
+//////////////////////////////////////
+static void initStage(void)
+{
+    // オブジェクトの全消去
+     obj_clear_all();
+
+    // 新たにプレイヤーの生成
+    pObjPlayer = ObjManager_Make(OBJ_ID_PLAYER, 128, 256-16);
+
+    // 敵の初期配置
+    setupEnemies();
+
+    // ゲーム状態の初期化
+    status = STATUS_NORMAL;
+
+    // 敵の動作を初期化
+    enemy_move_count = enemy_move_speed;
+    enemy_move_vx = 1;
+    enemy_wall_touch = 0;
+
+}
+
+//////////////////////////////////////
+/// @brief オブジェクトの全消去
+//////////////////////////////////////
+static void obj_clear_all(void)
+{
+    // オブジェクトの全消去
+    for (int i = 0; i < OBJ_MAX; i++)
+    {
+        pSObj pObj = ObjManager_GetObj(i);
+        ObjManager_Destroy(pObj);
+    }
+    // 自機弾のポインタをクリア
+    pObjBullet = NULL;
 }
