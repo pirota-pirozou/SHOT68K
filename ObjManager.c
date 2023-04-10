@@ -10,6 +10,7 @@ static pSObj g_pObj = (pSObj)-1;             // オブジェクトのポインタ配列
 // プロトタイプ宣言
 static volatile void ObjFunc_Null(pSObj pObj);
 static void ObjFunc_Draw(pSObj pObj);
+static void ObjFunc_DrawAnm(pSObj pObj);
 
 /////////////////////////////////
 // ＯＢＪマネージャー自体の初期化
@@ -163,11 +164,23 @@ pSObj ObjManager_Make(int _id, int _x, int _y)
         break;
         // 敵の爆発
     case OBJ_ID_EEFFECT:
-        pObj->Draw = ObjFunc_Draw;  // 描画標準
+        pObj->pat = 0x0150;         // 敵爆発パターン
+        pObj->anm_spd = 6;          // アニメーション速度
+        pObj->anm_num = 4;          // アニメーション枚数
+        pObj->anm_cou = 0;
+        pObj->anm_idx = 0;
+        pObj->Update = ObjFunc_EEffect;  // アニメ用
+        pObj->Draw = ObjFunc_DrawAnm;  // 描画アニメ用
         break;
         // プレイヤーの爆発
     case OBJ_ID_PEFFECT:
-        pObj->Draw = ObjFunc_Draw;  // 描画標準
+        pObj->pat = 0x0154;         // 自機爆発パターン
+        pObj->anm_spd = 6;          // アニメーション速度
+        pObj->anm_num = 4;          // アニメーション枚数
+        pObj->anm_cou = 0;
+        pObj->anm_idx = 0;
+        pObj->Update = ObjFunc_EEffect;  // アニメ用
+        pObj->Draw = ObjFunc_DrawAnm;  // 描画アニメ用
         break;
 
         // ここには来ないはず
@@ -226,4 +239,24 @@ static void ObjFunc_Draw(pSObj pObj)
 //					*ｄ４＝パターンコード %HR_VR_X_X_COLR_SPATSPAT : 下位8bit:パターン / 8-12bit:カラー
 //					*ｄ５＝プライオリティ %0000_0000_0000_0_0_PR : 00 表示しない / 01 BG0>BG1>SP / 10 BG0>SP>BG1 / 11 SP>BG0>BG1
 
+}
+
+////////////////////////////////////////
+/// @brief スプライトの描画（アニメ付き）
+////////////////////////////////////////
+/// @param pObj オブジェクトのポインタ
+/// @retval なし
+static void ObjFunc_DrawAnm(pSObj pObj)
+{
+    // スプライト表示 X,Y 座標が16,16 ずつずれているので注意
+    // スプライトの中心座標 8,8 が、引数座標の0,0 になるように補正
+    int x = pObj->x + 16 - 8;
+    int y = pObj->y + 16 - 8;
+
+    CM_sp_set(pObj->plane, x, y, pObj->pat+pObj->anm_idx, 1);
+//					*ｄ１＝スプライトプレーン番号（０～１２７）
+//					*ｄ２＝ｘ座標
+//					*ｄ３＝ｙ座標
+//					*ｄ４＝パターンコード %HR_VR_X_X_COLR_SPATSPAT : 下位8bit:パターン / 8-12bit:カラー
+//					*ｄ５＝プライオリティ %0000_0000_0000_0_0_PR : 00 表示しない / 01 BG0>BG1>SP / 10 BG0>SP>BG1 / 11 SP>BG0>BG1
 }

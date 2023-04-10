@@ -54,44 +54,15 @@ struct _tObj
     uint16 pad0;
     ObjFuncPtr Update;      // 更新関数
     ObjFuncPtr Draw;        // 描画関数
+    uint16 anm_spd;         // アニメーション速度
+    uint16 anm_num;         // アニメーション枚数
+    uint16 anm_cou;         // アニメーショタイミングカウンタ
+    uint16 anm_idx;         // アニメーションインデックス
 
-    uint8  padding[128-20]; // 128バイトになるようにパディング
+    uint8  padding[128-28]; // 128バイトになるようにパディング
 };
 typedef SObj* pSObj;
 
-#if 0
-/// @brief プレイヤーの構造体
-typedef struct
-{
-    uint16 id;              // オブジェクトID
-    uint16 x;               // X座標
-    uint16 y;               // Y座標
-    uint16 pat;             // パターン番号
-    uint16 plane;           // プレーン番号
-    uint16 pad0;
-
-    ObjFuncPtr Update;      // 更新関数
-    ObjFuncPtr Draw;        // 描画関数
-
-    uint8  padding[128-20]; // 128バイトになるようにパディング
-} SObjPlayer, *pSObjPlayer;
-
-/// @brief プレイヤー弾の構造体
-typedef struct
-{
-    uint16 id;              // オブジェクトID
-    uint16 x;               // X座標
-    uint16 y;               // Y座標
-    uint16 pat;             // パターン番号
-    uint16 plane;           // プレーン番号
-    uint16 pad0;
-
-    ObjFuncPtr Update;      // 更新関数
-    ObjFuncPtr Draw;        // 描画関数
-
-    uint8  padding[128-20]; // 128バイトになるようにパディング
-} SObjPBullet, *pSObjPBullet;
-#endif // 0
 
 // プロトタイプ宣言
 void OBJManager_Init();

@@ -139,6 +139,11 @@ void ObjFunc_Player(pSObj pObj)
     // 弾発射判定
     if (pad_trg & PAD_B)
     {
+        // 自機爆発エフェクトのテスト
+//         ObjManager_Make(OBJ_ID_PEFFECT,
+//            pObj->x, pObj->y-32);
+
+
         // Bボタンで弾発射
         if (pObjBullet == NULL)
         {
@@ -182,14 +187,61 @@ void ObjFunc_PBullet(pSObj pObj)
                 ObjManager_Destroy(pObj);      // 自機弾を消滅
                 pObjBullet = NULL;             // 出現フラグもクリア
                 ObjManager_Destroy(pObjEnemy); // 敵を消滅
-                // TODO: 爆発エフェクト
-                // TODO: 敵ごとのスコア加算
-                addScore(100);                  // スコア加算
+                //  敵爆発エフェクト
+                ObjManager_Make(OBJ_ID_EEFFECT,
+                    pObjEnemy->x, pObjEnemy->y);
+                // 敵ごとのスコア加算
+                int pts = 0;
+                switch (pObjEnemy->id)
+                {
+                case OBJ_ID_ENEMY1:
+                    pts = 100;
+                    break;
+                case OBJ_ID_ENEMY2:
+                    pts = 200;
+                    break;
+                case OBJ_ID_ENEMY3:
+                    pts = 300;
+                    break;
+                default:
+                // ここには来ないはず
+#ifdef __GNUC__
+                    /* GNU C Compiler specific */
+                    __builtin_unreachable();
+#endif
+#ifdef _MSC_VER
+                    /* Microsoft Visual C++ specific */
+                    __assume(0);
+#endif
+                }
+                addScore(pts);                  // スコア加算
                 break;
             }
         }
     }
 
+}
+
+/////////////////////////////////
+/// 敵爆発エフェクトの更新処理
+/////////////////////////////////
+/// @brief 敵爆発エフェクトの更新処理
+/// @param pObj 敵爆発エフェクトのオブジェクト
+/// @retval なし
+void ObjFunc_EEffect(pSObj pObj)
+{
+    // アニメーション処理
+    pObj->anm_cou++;
+    if (pObj->anm_cou >= pObj->anm_spd)
+    {
+        pObj->anm_cou = 0;
+        pObj->anm_idx++;
+        if (pObj->anm_idx >= pObj->anm_num)
+        {
+            // アニメーション終了
+            ObjManager_Destroy(pObj);
+        }
+    }
 }
 
 //////////////////////////////////////
