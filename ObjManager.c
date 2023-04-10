@@ -148,6 +148,7 @@ pSObj ObjManager_Make(int _id, int _x, int _y)
         // 敵の弾
     case OBJ_ID_EBULLET:
         pObj->pat = 0x0142;         // 敵共通ショットパターン
+        pObj->Update = ObjFunc_EBullet;  // 更新処理
         pObj->Draw = ObjFunc_Draw;  // 描画標準
         break;
         // 敵１

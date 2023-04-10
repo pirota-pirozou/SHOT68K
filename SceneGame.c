@@ -121,7 +121,7 @@ void ObjFunc_Player(pSObj pObj)
 
     // 移動判定
     int16 vx = 0;
-    if ((pad_trg & PAD_START)==PAD_START)
+    if ((pad & PAD_START)==PAD_START)
     {
         // STARTボタンは無効
     }
@@ -214,6 +214,45 @@ void ObjFunc_PBullet(pSObj pObj)
     }
 
 }
+
+/////////////////////////////////
+/// @brief 敵弾の更新処理
+/////////////////////////////////
+/// @param pObj 敵弾のオブジェクト
+/// @retval なし
+void ObjFunc_EBullet(pSObj pObj)
+{
+    pObj->y += 4;           // 下に移動
+    if (pObj->y >= 248)
+    {
+        // 画面外に出たら消滅
+        ObjManager_Destroy(pObj);
+        return;
+    }
+
+    // 自機と敵弾との当たり判定
+    if (pObjPlayer == NULL)
+    {
+        // 自機が消滅している場合は当たり判定しない
+        return;
+    }
+
+    // 敵との当たりチェック
+    int16 cx = abs(pObj->x - pObjPlayer->x);
+    int16 cy = abs(pObj->y - pObjPlayer->y);
+
+    if (cx < 16 && cy < 16)
+    {
+        // 当たった
+        //  自機爆発エフェクト
+        ObjManager_Make(OBJ_ID_PEFFECT,
+            pObjPlayer->x, pObjPlayer->y);
+        ObjManager_Destroy(pObj);      // 敵弾を消滅
+        ObjManager_Destroy(pObjPlayer); // プレイヤーを消滅
+        pObjPlayer = NULL;             // プレイヤーフラグもクリア
+    }
+}
+
 
 /////////////////////////////////
 /// 敵爆発エフェクトの更新処理
