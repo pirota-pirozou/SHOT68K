@@ -20,9 +20,13 @@ static uint32 bgDraw_flg;       // BG書き換えフラグ
 static pSObj pObjPlayer;        // プレイヤーのオブジェクト
 static pSObj pObjBullet;        // プレイヤーの弾のオブジェクト
 
+static int enemy_left;          // 敵の残り数
+
 // プロトタイプ宣言
 static void SetPause(BOOL);
 static void addScore(int);
+static void setupEnemies(void);
+
 
 // ゲームシーン　初期化
 void Game_Init(void)
@@ -39,6 +43,8 @@ void Game_Init(void)
 
     // プレイヤーの生成
     pObjPlayer = ObjManager_Make(OBJ_ID_PLAYER, 128, 256-16);
+    // 敵の生成
+    setupEnemies();
 }
 
 // ゲームシーン　更新
@@ -186,7 +192,6 @@ void ObjFunc_PBullet(pSObj pObj)
                 // 当たった
                 ObjManager_Destroy(pObj);      // 自機弾を消滅
                 pObjBullet = NULL;             // 出現フラグもクリア
-                ObjManager_Destroy(pObjEnemy); // 敵を消滅
                 //  敵爆発エフェクト
                 ObjManager_Make(OBJ_ID_EEFFECT,
                     pObjEnemy->x, pObjEnemy->y);
@@ -207,6 +212,7 @@ void ObjFunc_PBullet(pSObj pObj)
                     // ここには来ないはず
                     __UNREACHABLE__;
                 }
+                ObjManager_Destroy(pObjEnemy);  // 敵を消滅
                 addScore(pts);                  // スコア加算
                 break;
             }
@@ -308,5 +314,34 @@ static void addScore(int pts)
     {
         hiscore = score;
         bgDraw_flg |= BGDRAW_FLG_HISCORE;
+    }
+}
+
+//////////////////////////////////////
+/// @brief 敵の初期配置
+//////////////////////////////////////
+static void setupEnemies(void)
+{
+    // 敵の初期配置
+    enemy_left = 0;
+    for (int i = 0; i < 5; i++)
+    {
+        uint16 _id = OBJ_ID_ENEMY3;
+        if (i < 2)
+        {
+            _id = OBJ_ID_ENEMY2;
+        }
+        else if (i < 4)
+        {
+            _id = OBJ_ID_ENEMY1;
+        }
+        for (int j = 0; j < 11; j++)
+        {
+            int16 _x = (j * 20) + 24;
+            int16 _y = (i * 24) + 24;
+
+            pSObj pObj = ObjManager_Make(_id, _x, _y);
+            enemy_left++;
+        }
     }
 }

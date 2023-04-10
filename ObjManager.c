@@ -153,15 +153,30 @@ pSObj ObjManager_Make(int _id, int _x, int _y)
         break;
         // 敵１
     case OBJ_ID_ENEMY1:
-        pObj->Draw = ObjFunc_Draw;  // 描画標準
+        pObj->pat = 0x0143;         // 敵１パターン
+        pObj->anm_spd = 4;          // アニメーション速度
+        pObj->anm_num = 2;          // アニメーション枚数
+        pObj->anm_cou = 0;
+        pObj->anm_idx = 0;
+        pObj->Draw = ObjFunc_DrawAnm;  // 描画アニメ用
         break;
         // 敵２
     case OBJ_ID_ENEMY2:
-        pObj->Draw = ObjFunc_Draw;  // 描画標準
+        pObj->pat = 0x0145;         // 敵２パターン
+        pObj->anm_spd = 4;          // アニメーション速度
+        pObj->anm_num = 2;          // アニメーション枚数
+        pObj->anm_cou = 0;
+        pObj->anm_idx = 0;
+        pObj->Draw = ObjFunc_DrawAnm;  // 描画アニメ用
         break;
         // 敵３
     case OBJ_ID_ENEMY3:
-        pObj->Draw = ObjFunc_Draw;  // 描画標準
+        pObj->pat = 0x0147;         // 敵３パターン
+        pObj->anm_spd = 4;          // アニメーション速度
+        pObj->anm_num = 2;          // アニメーション枚数
+        pObj->anm_cou = 0;
+        pObj->anm_idx = 0;
+        pObj->Draw = ObjFunc_DrawAnm;  // 描画アニメ用
         break;
         // 敵の爆発
     case OBJ_ID_EEFFECT:

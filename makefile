@@ -19,6 +19,7 @@ GAS2HAS = perl ${XDEV68K_DIR}/util/x68k_gas2has.pl -cpu 68000 -inc doscall.inc -
 RUN68 = ${XDEV68K_DIR}/run68/run68
 HAS = $(RUN68) ${XDEV68K_DIR}/x68k_bin/HAS060.X
 HLK = $(RUN68) ${XDEV68K_DIR}/x68k_bin/hlk301.x
+XDFARC = $(RUN68) ${XDEV68K_DIR}/x68k_bin/XDFARC.X
 
 # 実行ファイル名
 TARGET_FILE = SHOT68K.X
@@ -80,6 +81,7 @@ $(TARGET_FILE) : $(OBJS)
 		echo $(INTERMEDIATE_DIR)/`basename $$FILENAME` >> $(HLK_LINK_LIST); \
         done
 	$(HLK) -i $(HLK_LINK_LIST) -o $(TARGET_FILE)
+#	$(XDFARC) -f ../TEST.XDF $(TARGET_FILE)
 
 # *.c ソースのコンパイル
 $(INTERMEDIATE_DIR)/%.o : %.c makefile
