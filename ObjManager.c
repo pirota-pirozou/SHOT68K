@@ -185,14 +185,7 @@ pSObj ObjManager_Make(int _id, int _x, int _y)
 
         // ‚±‚±‚É‚Í—ˆ‚È‚¢‚Í‚¸
     default:
-#ifdef __GNUC__
-        /* GNU C Compiler specific */
-        __builtin_unreachable();
-#endif
-#ifdef _MSC_VER
-        /* Microsoft Visual C++ specific */
-        __assume(0);
-#endif
+        __UNREACHABLE__;
     }
 
     return pObj;

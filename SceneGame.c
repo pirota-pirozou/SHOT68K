@@ -204,15 +204,8 @@ void ObjFunc_PBullet(pSObj pObj)
                     pts = 300;
                     break;
                 default:
-                // ‚±‚±‚É‚Í—ˆ‚È‚¢‚Í‚¸
-#ifdef __GNUC__
-                    /* GNU C Compiler specific */
-                    __builtin_unreachable();
-#endif
-#ifdef _MSC_VER
-                    /* Microsoft Visual C++ specific */
-                    __assume(0);
-#endif
+                    // ‚±‚±‚É‚Í—ˆ‚È‚¢‚Í‚¸
+                    __UNREACHABLE__;
                 }
                 addScore(pts);                  // ƒXƒRƒA‰ÁŽZ
                 break;
