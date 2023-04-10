@@ -14,11 +14,13 @@
 #include "SceneTitle.h"
 #include "SceneGame.h"
 
+//#define PAD_TEST		// コメントを外すとゲームパッドの値表示テスト
+
 // シーンの登録テーブル
 static const SSceneWork sceneTable[] =
  {
-	{ Title_Init, Title_Update, Title_Draw, Title_VSync, Title_Clear },
-	{ Game_Init, Game_Update, Game_Draw, Game_VSync, Game_Clear }
+	{ Title_Init, Title_Update, Title_Draw, Title_VSync, Title_Clear },		// タイトルシーン
+	{ Game_Init, Game_Update, Game_Draw, Game_VSync, Game_Clear }			// ゲームシーン
 };
 
 // プロトタイプ宣言
@@ -60,8 +62,10 @@ int main(int argc, char *argv[])
 	SceneManager_ChangeScene(SCENE_ID_TITLE);
 
 	// ゲームパッドのテスト
+#ifdef PAD_TEST
 	unsigned short pad = 0;
 	unsigned char strtmp[128];
+#endif
 
 	// メインループテスト
 	for (;;)
@@ -72,10 +76,11 @@ int main(int argc, char *argv[])
 		}
 		GamePadManager_Update();	// ゲームパッドの更新
 
+#ifdef PAD_TEST
 		pad = GamePadManager_GetPad();
 		sprintf(strtmp, "PAD=%02X", pad);
 		CM_bg_puts(strtmp, 0, 8, 1);
-
+#endif
 
 		Scene_Update();		// シーンの更新
 		Scene_Draw();		// シーンの描画
