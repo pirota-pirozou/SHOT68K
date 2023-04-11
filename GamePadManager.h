@@ -13,12 +13,24 @@
 extern "C" {
 #endif
 
+extern uint16 pad;
+extern uint16 pad_trg;
+
 // マクロ定義や関数プロトタイプ宣言をここに記述する
 void GamePadManager_Init(void);
 void GamePadManager_Update(void);
-uint16 GamePadManager_GetPad(void);
-uint16 GamePadManager_GetTrigger(void);
 
+// ゲームパッドマネージャー　パッド状態取得
+FORCE_INLINE uint16 GamePadManager_GetPad(void)
+{
+    return pad;
+}
+
+// ゲームパッドマネージャー　padのトリガー状態を取得
+FORCE_INLINE uint16 GamePadManager_GetTrigger(void)
+{
+    return pad_trg;
+}
 
 #ifdef __cplusplus
 }

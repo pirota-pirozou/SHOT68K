@@ -5,7 +5,7 @@
 #include "SceneGame.h"
 #include "ObjManager.h"
 
-static pSObj g_pObj = (pSObj)-1;             // オブジェクトのポインタ配列
+pSObj g_pObj = (pSObj)-1;             // オブジェクトのポインタ配列
 
 // プロトタイプ宣言
 static volatile void ObjFunc_Null(pSObj pObj);
@@ -38,17 +38,6 @@ void OBJManager_Init()
         pObj->Update = ObjFunc_Null;
         pObj->Draw = ObjFunc_Null;
     }
-}
-
-/////////////////////////////////
-// ＯＢＪマネージャー：取得処理
-/////////////////////////////////
-/// @brief オブジェクトのポインタを取得する
-/// @param i オブジェクトのインデックス
-/// @retval オブジェクトのポインタ
-FORCE_INLINE pSObj ObjManager_GetObj(int i)
-{
-    return &g_pObj[i];
 }
 
 /////////////////////////////////

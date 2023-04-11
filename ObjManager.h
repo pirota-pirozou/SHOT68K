@@ -72,11 +72,22 @@ struct _tObj
 };
 typedef SObj* pSObj;
 
+extern pSObj g_pObj; // オブジェクトのポインタ
+
+/////////////////////////////////
+// ＯＢＪマネージャー：取得処理
+/////////////////////////////////
+/// @brief オブジェクトのポインタを取得する
+/// @param i オブジェクトのインデックス
+/// @retval オブジェクトのポインタ
+FORCE_INLINE pSObj ObjManager_GetObj(int i)
+{
+    return &g_pObj[i];
+}
 
 // プロトタイプ宣言
 void OBJManager_Init();
 pSObj ObjManager_Make(int id, int x, int y);
-pSObj ObjManager_GetObj(int i);
 void ObjManager_Update();
 void ObjManager_Draw();
 void ObjManager_End();
