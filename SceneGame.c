@@ -313,7 +313,7 @@ void ObjFunc_Player(pSObj pObj)
 /////////////////////////////////
 /// @brief 自機弾の更新処理
 /// @param pObj 自機弾のオブジェクト
-/// @retval なし
+/// @return なし
 void ObjFunc_PBullet(pSObj pObj)
 {
     pObj->y -= 8;
@@ -380,7 +380,7 @@ void ObjFunc_PBullet(pSObj pObj)
 /// @brief 敵弾の更新処理
 /////////////////////////////////
 /// @param pObj 敵弾のオブジェクト
-/// @retval なし
+/// @return なし
 void ObjFunc_EBullet(pSObj pObj)
 {
     pObj->y += 4;           // 下に移動
@@ -420,7 +420,7 @@ void ObjFunc_EBullet(pSObj pObj)
 /////////////////////////////////
 /// @brief 敵爆発エフェクトの更新処理
 /// @param pObj 敵爆発エフェクトのオブジェクト
-/// @retval なし
+/// @return なし
 void ObjFunc_EEffect(pSObj pObj)
 {
     // アニメーション処理
@@ -440,7 +440,7 @@ void ObjFunc_EEffect(pSObj pObj)
 //////////////////////////////////////
 /// @brief ポーズフラグの設定
 /// @param[in] flg ポーズフラグ
-/// @retval なし
+/// @return なし
 //////////////////////////////////////
 static void SetPause(BOOL flg)
 {
@@ -458,7 +458,7 @@ static void SetPause(BOOL flg)
 //////////////////////////////////////
 // スコアの加算
 /// @param[in] pts 加算するスコア
-/// @retval なし
+/// @return なし
 //////////////////////////////////////
 static void addScore(int pts)
 {

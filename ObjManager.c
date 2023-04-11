@@ -15,7 +15,7 @@ static void ObjFunc_DrawAnm(pSObj pObj);
 /////////////////////////////////
 // ＯＢＪマネージャー自体の初期化
 /////////////////////////////////
-/// @retval なし
+/// @return なし
 void OBJManager_Init()
 {
     // オブジェクトのメモリを確保
@@ -43,7 +43,7 @@ void OBJManager_Init()
 /////////////////////////////////
 // ＯＢＪマネージャー：更新処理
 /////////////////////////////////
-/// @retval なし
+/// @return なし
 void ObjManager_Update()
 {
     // オブジェクトの更新
@@ -60,7 +60,7 @@ void ObjManager_Update()
 /////////////////////////////////
 // ＯＢＪマネージャー：描画処理
 /////////////////////////////////
-/// @retval なし
+/// @return なし
 void ObjManager_Draw()
 {
     // オブジェクトの描画
@@ -77,7 +77,7 @@ void ObjManager_Draw()
 /////////////////////////////////
 // ＯＢＪマネージャー：終了処理
 /////////////////////////////////
-/// @retval なし
+/// @return なし
 void ObjManager_End()
 {
     // オブジェクトのメモリを解放
@@ -92,7 +92,7 @@ void ObjManager_End()
 /// @param _id オブジェクトのＩＤ
 /// @param _x  オブジェクトのＸ座標
 /// @param _y  オブジェクトのＹ座標
-/// @retval オブジェクトのポインタ
+/// @return オブジェクトのポインタ
 pSObj ObjManager_Make(int _id, int _x, int _y)
 {
     pSObj pObj = NULL;
@@ -201,7 +201,7 @@ pSObj ObjManager_Make(int _id, int _x, int _y)
 /////////////////////////////////
 /// @brief オブジェクトを破棄する
 /// @param pObj オブジェクトのポインタ
-/// @retval なし
+/// @return なし
 void ObjManager_Destroy(pSObj pObj)
 {
     pObj->id = OBJ_ID_EMPTY;
@@ -214,7 +214,7 @@ void ObjManager_Destroy(pSObj pObj)
 // ＯＢＪマネージャー：敵オブジェクトを見つける
 /////////////////////////////////
 /// @brief 敵オブジェクトを見つける
-/// @retval オブジェクトのインデックス
+/// @return オブジェクトのインデックス
 int ObjManager_FindEnemyIdx(void)
 {
     // 空きオブジェクトを探す
@@ -238,7 +238,7 @@ int ObjManager_FindEnemyIdx(void)
 /////////////////////////////////
 /// @brief 次の敵オブジェクトを見つける
 /// @param idx 現在のインデックス
-/// @retval オブジェクトのインデックス
+/// @return オブジェクトのインデックス
 int ObjManager_FindEnemyNextIdx(int idx)
 {
     // 空きオブジェクトを探す
@@ -262,7 +262,7 @@ int ObjManager_FindEnemyNextIdx(int idx)
 /////////////////////////////////
 /// @brief 何もしない関数
 /////////////////////////////////
-/// @retval なし
+/// @return なし
 static volatile void ObjFunc_Null(pSObj pObj)
 {
 }
@@ -271,7 +271,7 @@ static volatile void ObjFunc_Null(pSObj pObj)
 /// @brief スプライトの描画（デフォルト）
 ////////////////////////////////////////
 /// @param pObj オブジェクトのポインタ
-/// @retval なし
+/// @return なし
 static void ObjFunc_Draw(pSObj pObj)
 {
     // スプライト表示 X,Y 座標が16,16 ずつずれているので注意
@@ -292,7 +292,7 @@ static void ObjFunc_Draw(pSObj pObj)
 /// @brief スプライトの描画（アニメ付き）
 ////////////////////////////////////////
 /// @param pObj オブジェクトのポインタ
-/// @retval なし
+/// @return なし
 static void ObjFunc_DrawAnm(pSObj pObj)
 {
     // スプライト表示 X,Y 座標が16,16 ずつずれているので注意
