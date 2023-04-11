@@ -147,6 +147,7 @@ pSObj ObjManager_Make(int _id, int _x, int _y)
         pObj->anm_num = 2;          // アニメーション枚数
         pObj->anm_cou = 0;
         pObj->anm_idx = 0;
+        pObj->vx = 1;
         pObj->Draw = ObjFunc_DrawAnm;  // 描画アニメ用
         break;
         // 敵２
@@ -156,6 +157,7 @@ pSObj ObjManager_Make(int _id, int _x, int _y)
         pObj->anm_num = 2;          // アニメーション枚数
         pObj->anm_cou = 0;
         pObj->anm_idx = 0;
+        pObj->vx = 1;
         pObj->Draw = ObjFunc_DrawAnm;  // 描画アニメ用
         break;
         // 敵３
@@ -165,6 +167,7 @@ pSObj ObjManager_Make(int _id, int _x, int _y)
         pObj->anm_num = 2;          // アニメーション枚数
         pObj->anm_cou = 0;
         pObj->anm_idx = 0;
+        pObj->vx = 1;
         pObj->Draw = ObjFunc_DrawAnm;  // 描画アニメ用
         break;
         // 敵の爆発

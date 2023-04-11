@@ -117,36 +117,33 @@ void Game_Update(void)
         // “G‚Ì“®ì‚ðXVB‚PƒLƒƒƒ‰‚¸‚Â“®‚©‚·
         pSObj pObj = ObjManager_GetObj(enemy_move_idx);
         // TODO: “G‚Ì“®ì‚ðXV‚·‚é
-        pObj->x += (enemy_move_vx * 8);
+        pObj->x += (enemy_move_vx * 4);
+//        pObj->x +=(pObj->vx * 4);
         if (pObj->x < 8)
         {
             // ¶’[‚É“ž’B‚µ‚½‚ç
             pObj->x = 8;
             // “®ì”½“]
+//            pObj->vx = 1;
             enemy_move_vx = 1;
             enemy_wall_touch = 1;
         }
-        else if (pObj->x > 256-16)
+        else if (pObj->x > 240)
         {
             // ‰E’[‚É“ž’B‚µ‚½‚ç
-            pObj->x = 256-16;
+            pObj->x = 240;
             // “®ì”½“]
+//            pObj->vx = -1;
             enemy_move_vx = -1;
             enemy_wall_touch = 1;
         }
         else
         {
             // •Ç‚ÉÚG‚µ‚Ä‚¢‚È‚¢
-            enemy_wall_touch = 0;
+//            enemy_wall_touch = 0;
         }
         // ƒLƒƒƒ‰ŠGØ‘Ö
         pObj->anm_idx ^= 1;
-        if (enemy_wall_touch)
-        {
-            // •Ç‚ÉÚG‚µ‚½‚ç
-            // “G‘S‘Ì‚ð‰º‚ÉˆÚ“®
-            enemiesMoveDown(8);
-        }
         // ‚à‚µ“G‚ª’n–Ê‚É~‚è‚½‚ç
         if (pObj->y >= DEADLINE_Y)
         {
@@ -159,7 +156,28 @@ void Game_Update(void)
             break;
         }
         // ŽŸ‚ÌƒLƒƒƒ‰‚Ö
-        enemy_move_idx = ObjManager_FindEnemyNextIdx(enemy_move_idx);
+        int next_idx = ObjManager_FindEnemyNextIdx(enemy_move_idx);
+        if (next_idx < enemy_move_idx)
+        {
+            // ‘S‚Ä‚Ì“G‚Ì“®ì‚ªI‚í‚Á‚½‚ç
+            if (enemy_wall_touch)
+            {
+                // •Ç‚ÉÚG‚µ‚½‚ç
+                // “G‘S‘Ì‚ð‰º‚ÉˆÚ“®
+                enemy_wall_touch = 0;
+//                enemiesMoveDown(8);
+            }
+        }
+        else
+        {
+            // •Ç‚Éƒ^ƒbƒ`‚µ‚½‚çƒLƒƒƒ‰‚ð‰º‚ÉˆÚ“®
+            if (enemy_wall_touch)
+            {
+                pObj->y += 8;
+            }
+
+        }
+        enemy_move_idx = next_idx;
         break;
     case STATUS_MISS:
         // ƒ~ƒX
@@ -477,14 +495,22 @@ static void setupEnemies(void)
     enemy_left = 0;
     for (int i = 0; i < 5; i++)
     {
-        uint16 _id = OBJ_ID_ENEMY3;
-        if (i < 2)
+        uint16 _id;
+        switch (i)
         {
+        case 0:
+            _id = OBJ_ID_ENEMY3;
+            break;
+        case 1:
+        case 2:
             _id = OBJ_ID_ENEMY2;
-        }
-        else if (i < 4)
-        {
+            break;
+        case 3:
+        case 4:
             _id = OBJ_ID_ENEMY1;
+            break;
+        default:
+            __UNREACHABLE__;
         }
         for (int j = 0; j < 11; j++)
         {

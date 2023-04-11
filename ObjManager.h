@@ -60,7 +60,7 @@ struct _tObj
     int16 y;                // Y座標
     uint16 pat;             // パターン番号
     uint16 plane;           // プレーン番号
-    uint16 pad0;
+    uint16 vx;              // X方向
     ObjFuncPtr Update;      // 更新関数
     ObjFuncPtr Draw;        // 描画関数
     uint16 anm_spd;         // アニメーション速度
