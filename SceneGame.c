@@ -164,7 +164,7 @@ void Game_VSync(void)
     {
         // ÉXÉRÉAÇÃèëÇ´ä∑Ç¶
         sprintf(strtmp, "%08d", score);
-        CM_bg_puts(strtmp, 7, 0, 1);
+        CM_bg_puts(strtmp, 6, 0, 1);
         bgDraw_flg &= ~BGDRAW_FLG_SCORE;
     }
     if (bgDraw_flg & BGDRAW_FLG_HISCORE)
