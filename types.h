@@ -10,8 +10,8 @@
 // the author of that program.
 
 #pragma once
-#ifndef __TYPEDEF_H__
-#define __TYPEDEF_H__
+#ifndef __TYPES_H__
+#define __TYPES_H__
 
 // Šî–{Œ^
 typedef unsigned char uint8;
@@ -30,4 +30,4 @@ typedef unsigned char BOOL;
 //
 #define FORCE_INLINE __attribute__((__always_inline__)) inline
 
-#endif // __TYPEDEF_H__
+#endif // __TYPES_H__

@@ -6,6 +6,7 @@
 #define __GAMEPADMANAGER_H__
 
 #include <stdio.h>
+#include "types.h"
 #include "mylib.h"
 
 #ifdef __cplusplus
@@ -15,8 +16,8 @@ extern "C" {
 // マクロ定義や関数プロトタイプ宣言をここに記述する
 void GamePadManager_Init(void);
 void GamePadManager_Update(void);
-unsigned short GamePadManager_GetPad(void);
-unsigned short GamePadManager_GetTrigger(void);
+uint16 GamePadManager_GetPad(void);
+uint16 GamePadManager_GetTrigger(void);
 
 
 #ifdef __cplusplus

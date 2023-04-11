@@ -46,7 +46,7 @@ void OBJManager_Init()
 /// @brief オブジェクトのポインタを取得する
 /// @param i オブジェクトのインデックス
 /// @retval オブジェクトのポインタ
-pSObj ObjManager_GetObj(int i)
+FORCE_INLINE pSObj ObjManager_GetObj(int i)
 {
     return &g_pObj[i];
 }
