@@ -56,6 +56,7 @@ static void to_next_stage(void);
 static void obj_clear_all(void);
 static void initStage(void);
 static void setGameOver(void);
+static void enemiesMoveDown(int);
 
 // ゲームシーン　初期化
 void Game_Init(void)
@@ -116,51 +117,53 @@ void Game_Update(void)
     {
     case STATUS_NORMAL:
         // （通常）ゲーム中
-        if (enemy_move_idx >= 0)
+        if (enemy_move_idx < 0) break;
+        // 敵の動作を更新。１キャラずつ動かす
+        pSObj pObj = ObjManager_GetObj(enemy_move_idx);
+        // TODO: 敵の動作を更新する
+        pObj->x += (enemy_move_vx * 8);
+        if (pObj->x < 8)
         {
-            // 敵の動作を更新。１キャラずつ動かす
-            pSObj pObj = ObjManager_GetObj(enemy_move_idx);
-            // TODO: 敵の動作を更新する
-            pObj->x += (enemy_move_vx * 8);
-            if (pObj->x < 8)
-            {
-                // 左端に到達したら
-                pObj->x = 8;
-                // 下に降りて動作反転
-                pObj->y += 8;
-                enemy_move_vx = 1;
-                enemy_wall_touch = 1;
-            }
-            else if (pObj->x > 256-16)
-            {
-                // 右端に到達したら
-                pObj->x = 256-16;
-                // 下に降りて動作反転
-                pObj->y += 8;
-                enemy_move_vx = -1;
-                enemy_wall_touch = 1;
-            }
-            else
-            {
-                // 壁に接触していない
-                enemy_wall_touch = 0;
-            }
-            // キャラ絵切替
-            pObj->anm_idx ^= 1;
-            // もし敵が地面に降りたら
-            if (pObj->y >= DEADLINE_Y)
-            {
-                // プレイヤー爆破
-                ObjManager_Make(OBJ_ID_PEFFECT,
-                    pObjPlayer->x, pObjPlayer->y);
-                // プレイヤーを消す
-                ObjManager_Destroy(pObjPlayer);
-                // ゲームオーバー
-                setGameOver();
-            }
-            // 次のキャラへ
-            enemy_move_idx = ObjManager_FindEnemyNextIdx(enemy_move_idx);
+            // 左端に到達したら
+            pObj->x = 8;
+            // 動作反転
+            enemy_move_vx = 1;
+            enemy_wall_touch = 1;
         }
+        else if (pObj->x > 256-16)
+        {
+            // 右端に到達したら
+            pObj->x = 256-16;
+            // 動作反転
+            enemy_move_vx = -1;
+            enemy_wall_touch = 1;
+        }
+        else
+        {
+            // 壁に接触していない
+            enemy_wall_touch = 0;
+        }
+        // キャラ絵切替
+        pObj->anm_idx ^= 1;
+        if (enemy_wall_touch)
+        {
+            // 壁に接触したら
+            // 敵全体を下に移動
+            enemiesMoveDown(8);
+        }
+        // もし敵が地面に降りたら
+        if (pObj->y >= DEADLINE_Y)
+        {
+            // プレイヤー爆破
+            ObjManager_Make(OBJ_ID_PEFFECT, pObjPlayer->x, pObjPlayer->y);
+            // プレイヤーを消す
+            ObjManager_Destroy(pObjPlayer);
+            // ゲームオーバーへ
+            setGameOver();
+            break;
+        }
+        // 次のキャラへ
+        enemy_move_idx = ObjManager_FindEnemyNextIdx(enemy_move_idx);
         break;
     case STATUS_MISS:
         // ミス
@@ -228,7 +231,9 @@ void Game_VSync(void)
     if (bgDraw_flg & BGDRAW_FLG_LEFT)
     {
         // 残機の書き換え
-        sprintf(strtmp, "%02d", player_left);
+        int left = player_left - 1;
+        if (left < 0) left = 0;
+        sprintf(strtmp, "%02d", left);
         CM_bg_puts(strtmp, 5, 31, 1);
         bgDraw_flg &= ~BGDRAW_FLG_LEFT;
     }
@@ -492,6 +497,24 @@ static void setupEnemies(void)
 
             pSObj pObj = ObjManager_Make(_id, _x, _y);
             enemy_left++;
+        }
+    }
+}
+
+//////////////////////////////////////
+/// @brief 敵全体を下に下降させる
+//////////////////////////////////////
+/// @param add 下降ドット数
+static void enemiesMoveDown(int add)
+{
+    for (int i = 0; i < OBJ_MAX; i++)
+    {
+        pSObj pObj = ObjManager_GetObj(i);
+        if (pObj->id == OBJ_ID_ENEMY1 ||
+            pObj->id == OBJ_ID_ENEMY2 ||
+            pObj->id == OBJ_ID_ENEMY3)
+        {
+            pObj->y += add;
         }
     }
 }
