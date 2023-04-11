@@ -173,7 +173,7 @@ pSObj ObjManager_Make(int _id, int _x, int _y)
         // 敵の爆発
     case OBJ_ID_EEFFECT:
         pObj->pat = 0x0150;         // 敵爆発パターン
-        pObj->anm_spd = 6;          // アニメーション速度
+        pObj->anm_spd = 4;          // アニメーション速度
         pObj->anm_num = 4;          // アニメーション枚数
         pObj->anm_cou = 0;
         pObj->anm_idx = 0;
