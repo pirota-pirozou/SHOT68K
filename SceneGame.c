@@ -40,8 +40,6 @@ static int status;              // ゲーム状態
 static int status_count;        // 状態遷移カウンタ
 
 // 敵の動作　管理用
-static int enemy_move_speed;    // 敵の動作速度
-static int enemy_move_count;    // 敵の動作カウンタ
 static int enemy_move_idx;      // 敵の動作インデックス
 static int16 enemy_move_vx;     // 敵の動作方向
 static int16 enemy_wall_touch;  // 敵の壁接触フラグ
@@ -81,8 +79,6 @@ void Game_Init(void)
     status_count = 0;
 
     // 敵の動作を初期化
-    enemy_move_speed = 60;
-    enemy_move_count = enemy_move_speed;
     enemy_move_vx = 1;
     enemy_wall_touch = 0;
 
@@ -529,10 +525,6 @@ static void to_next_stage(void)
 
     bgDraw_flg |= BGDRAW_FLG_STAGE;
 
-    // 敵の動作を初期化
-    enemy_move_speed = 60 - (stage * 2);
-    if (enemy_move_speed < 10) enemy_move_speed = 10;
-
     // ステージの初期化
     initStage();
 }
@@ -555,7 +547,6 @@ static void initStage(void)
     status = STATUS_NORMAL;
 
     // 敵の動作を初期化
-    enemy_move_count = enemy_move_speed;
     enemy_move_vx = 1;
     enemy_wall_touch = 0;
 
