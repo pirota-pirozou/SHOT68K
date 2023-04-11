@@ -211,6 +211,55 @@ void ObjManager_Destroy(pSObj pObj)
 }
 
 /////////////////////////////////
+// ＯＢＪマネージャー：敵オブジェクトを見つける
+/////////////////////////////////
+/// @brief 敵オブジェクトを見つける
+/// @retval オブジェクトのインデックス
+int ObjManager_FindEnemyIdx(void)
+{
+    // 空きオブジェクトを探す
+    int i;
+    int ret = -1;
+    for (i = 0; i < OBJ_MAX; i++)
+    {
+        if (g_pObj[i].id >= OBJ_ID_ENEMY1 &&
+            g_pObj[i].id <= OBJ_ID_ENEMY3)
+        {
+            ret = i;
+            break;
+        }
+    }
+
+    return ret;
+}
+
+/////////////////////////////////
+// ＯＢＪマネージャー：次の敵オブジェクトを見つける
+/////////////////////////////////
+/// @brief 次の敵オブジェクトを見つける
+/// @param idx 現在のインデックス
+/// @retval オブジェクトのインデックス
+int ObjManager_FindEnemyNextIdx(int idx)
+{
+    // 空きオブジェクトを探す
+    int i;
+    int n = (idx + 1) & (OBJ_MAX - 1);
+    int ret = -1;
+    for (i = 0; i < OBJ_MAX; i++)
+    {
+        if (g_pObj[n].id >= OBJ_ID_ENEMY1 &&
+            g_pObj[n].id <= OBJ_ID_ENEMY3)
+        {
+            return n;
+        }
+        n = (n + 1) & (OBJ_MAX - 1);
+    }
+
+    return -1;
+}
+
+
+/////////////////////////////////
 /// @brief 何もしない関数
 /////////////////////////////////
 /// @retval なし

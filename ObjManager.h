@@ -92,9 +92,9 @@ void ObjManager_Update();
 void ObjManager_Draw();
 void ObjManager_End();
 
-
-
 void ObjManager_Destroy(pSObj pObj);
 
+int ObjManager_FindEnemyIdx(void);
+int ObjManager_FindEnemyNextIdx(int);
 
 #endif // __OBJMANAGER_H__

@@ -9,10 +9,13 @@
 #define PAUSE_X 13
 #define PAUSE_Y 15
 
+#define DEADLINE_Y  232             // 敵の侵略位置
+
 #define BGDRAW_FLG_SCORE 0x0001    // スコアの書き換えフラグ
 #define BGDRAW_FLG_HISCORE 0x0002  // ハイスコアの書き換えフラグ
 #define BGDRAW_FLG_LEFT 0x0004  // 残機の書き換えフラグ
 #define BGDRAW_FLG_STAGE 0x0008  // ステージの書き換えフラグ
+#define BGDRAW_FLG_GAMEOVER 0x0010  // ゲームオーバー書き換えフラグ
 
 int score = 0;                  // スコア
 int hiscore = 0;                // ハイスコア
@@ -39,6 +42,7 @@ static int status_count;        // 状態遷移カウンタ
 // 敵の動作　管理用
 static int enemy_move_speed;    // 敵の動作速度
 static int enemy_move_count;    // 敵の動作カウンタ
+static int enemy_move_idx;      // 敵の動作インデックス
 static int16 enemy_move_vx;     // 敵の動作方向
 static int16 enemy_wall_touch;  // 敵の壁接触フラグ
 static int stage;               // ステージ
@@ -51,8 +55,7 @@ static void setupEnemies(void);
 static void to_next_stage(void);
 static void obj_clear_all(void);
 static void initStage(void);
-
-
+static void setGameOver(void);
 
 // ゲームシーン　初期化
 void Game_Init(void)
@@ -86,6 +89,9 @@ void Game_Init(void)
     pObjPlayer = ObjManager_Make(OBJ_ID_PLAYER, 128, 256-16);
     // 敵の生成
     setupEnemies();
+
+    // 敵の動作インデックスを初期化
+    enemy_move_idx = ObjManager_FindEnemyIdx();
 }
 
 // ゲームシーン　更新
@@ -110,6 +116,51 @@ void Game_Update(void)
     {
     case STATUS_NORMAL:
         // （通常）ゲーム中
+        if (enemy_move_idx >= 0)
+        {
+            // 敵の動作を更新。１キャラずつ動かす
+            pSObj pObj = ObjManager_GetObj(enemy_move_idx);
+            // TODO: 敵の動作を更新する
+            pObj->x += (enemy_move_vx * 8);
+            if (pObj->x < 8)
+            {
+                // 左端に到達したら
+                pObj->x = 8;
+                // 下に降りて動作反転
+                pObj->y += 8;
+                enemy_move_vx = 1;
+                enemy_wall_touch = 1;
+            }
+            else if (pObj->x > 256-16)
+            {
+                // 右端に到達したら
+                pObj->x = 256-16;
+                // 下に降りて動作反転
+                pObj->y += 8;
+                enemy_move_vx = -1;
+                enemy_wall_touch = 1;
+            }
+            else
+            {
+                // 壁に接触していない
+                enemy_wall_touch = 0;
+            }
+            // キャラ絵切替
+            pObj->anm_idx ^= 1;
+            // もし敵が地面に降りたら
+            if (pObj->y >= DEADLINE_Y)
+            {
+                // プレイヤー爆破
+                ObjManager_Make(OBJ_ID_PEFFECT,
+                    pObjPlayer->x, pObjPlayer->y);
+                // プレイヤーを消す
+                ObjManager_Destroy(pObjPlayer);
+                // ゲームオーバー
+                setGameOver();
+            }
+            // 次のキャラへ
+            enemy_move_idx = ObjManager_FindEnemyNextIdx(enemy_move_idx);
+        }
         break;
     case STATUS_MISS:
         // ミス
@@ -188,6 +239,13 @@ void Game_VSync(void)
         CM_bg_puts(strtmp, 28, 31, 1);
         bgDraw_flg &= ~BGDRAW_FLG_STAGE;
     }
+    if (bgDraw_flg & BGDRAW_FLG_GAMEOVER)
+    {
+        // ゲームオーバーの書き換え
+        CM_bg_puts("GAME OVER", 11, 16, 1);
+        bgDraw_flg &= ~BGDRAW_FLG_GAMEOVER;
+    }
+
 //    CM_bg_puts("GAME_VSYNC()", 0, 3, 1);
 }
 
@@ -493,4 +551,16 @@ static void obj_clear_all(void)
     }
     // 自機弾のポインタをクリア
     pObjBullet = NULL;
+}
+
+//////////////////////////////////////
+/// @brief ゲームオーバー状態へ
+//////////////////////////////////////
+static void setGameOver(void)
+{
+    // ゲームオーバー状態へ
+    status_count = 240;
+    status = STATUS_GAMEOVER;
+    player_left = 0;
+    bgDraw_flg |= (BGDRAW_FLG_GAMEOVER | BGDRAW_FLG_LEFT);
 }
