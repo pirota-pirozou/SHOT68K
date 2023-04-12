@@ -34,7 +34,8 @@ CFLAGS = $(COMMON_FLAGS) -Wno-builtin-declaration-mismatch -fcall-used-d2 -fcall
 
 # *.c ソースファイル
 C_SRCS = main.c SceneManager.c GamePadManager.c ObjManager.c \
-		 SceneTitle.c SceneGame.c
+		 SceneTitle.c SceneGame.c \
+		 BMPLoad256.c
 
 # *.s ソースファイル
 ASM_SRCS = mylib.s CMSprite.s
