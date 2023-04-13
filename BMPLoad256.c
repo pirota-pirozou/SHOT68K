@@ -109,13 +109,57 @@ pBMPFILE256 LoadBMP256(const char *fname)
 	return bmpData;
 }
 
+/// @brief メモリ上のBMP256色画像の表示
+/// @param pBMP 画像データのポインタ
+/// @return 結果
+/// @retval 0 失敗
+/// @retval 1 成功
+int PutBMPMemory256(pBMPFILE256 pBMP)
+{
+	// フォーマットチェック
+    if (pBMP->fileHeader.bfType != 0x4D42 // 'BM'
+		 		|| pBMP->infoHeader.biBitcount != 8)
+	{
+        fprintf(stderr, "サポートされていないフォーマットです\n");
+        return 0;
+    }
+
+	// pallete を使用して、必要な操作を行います
+	WORD_t *pal = (WORD_t *)0xE82000;
+	for (int i = 0; i < 256; i++)
+	{
+		BYTE_t r = pBMP->palette[i].rgbRed >> 3;
+		BYTE_t g = pBMP->palette[i].rgbGreen >> 3;
+		BYTE_t b = pBMP->palette[i].rgbBlue >> 3;
+		WORD_t col = (b << 1) | (r << 6) | (g << 11);
+		pal[i] = col;
+	}
+
+	// 画像データをVRAMに転送します
+	WORD_t *vram = (WORD_t *)0xC00000;
+	int width = pBMP->infoHeader.biWidth;
+	int height = pBMP->infoHeader.biHeight;
+
+	for (int y = 0; y < height; ++y)
+	{
+		WORD_t* vramLine = &vram[y * 512];
+		const BYTE_t *imageLine = &pBMP->imgdata[(height - y - 1) * width];
+
+		for (int x = 0; x < width; ++x)
+		{
+			vramLine[x] = imageLine[x];
+		}
+	}
+
+	return 1;
+}
 
 /// @brief BMP256色画像の読み込み、表示
 /// @param fname ファイル名
 /// @return 結果
 /// @retval 0 失敗
 /// @retval 1 成功
-int PutBMP256(const char *fname)
+int PutBMPFile256(const char *fname)
 {
 	FILE *fp = fopen(fname, "rb");
     if (fp == NULL)

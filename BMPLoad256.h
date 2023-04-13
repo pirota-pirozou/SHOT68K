@@ -67,7 +67,8 @@ extern "C" {
 
 // プロトタイプ宣言
 pBMPFILE256 LoadBMP256(const char *fname);
-int PutBMP256(const char *fname);
+int PutBMPMemory256(pBMPFILE256 pBMP);
+int PutBMPFile256(const char *fname);
 
 #ifdef __cplusplus
 }

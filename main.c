@@ -19,7 +19,7 @@
 //#define PAD_TEST		// コメントを外すとゲームパッドの値表示テスト
 
 // 常駐データ
-pBMPFILE256 pBmpTitle = (pBMPFILE256)-1;		// BMPファイルデータ（タイトル）
+pBMPFILE256 pBmpBackGround = (pBMPFILE256)-1;		// BMPファイルデータ（タイトル）
 
 // シーンの登録テーブル
 static const SSceneWork sceneTable[] =
@@ -113,11 +113,11 @@ FORCE_QUIT:
 	super_end();					// ユーザーモードへ復帰
 
 	// タイトル画面のメモリ解放チェック
-	if (pBmpTitle != (pBMPFILE256) -1)
+	if (pBmpBackGround != (pBMPFILE256) -1)
 	{
 		// メモリ解放
-		dos_free(pBmpTitle);
-		pBmpTitle = (pBmpTitle) -1;
+		dos_free(pBmpBackGround);
+		pBmpBackGround = (pBmpBackGround) -1;
 	}
 
 	//
@@ -201,7 +201,7 @@ BOOL load_title_data(void)
 			result = FALSE;
 			break;
 		}
-		pBmpTitle = pBMP;
+		pBmpBackGround = pBMP;
 	} while (0);
 
 	return result;

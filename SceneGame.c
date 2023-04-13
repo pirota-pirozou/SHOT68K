@@ -18,6 +18,8 @@
 #define BGDRAW_FLG_STAGE 0x0008  // ステージの書き換えフラグ
 #define BGDRAW_FLG_GAMEOVER 0x0010  // ゲームオーバー書き換えフラグ
 
+extern pBMPFILE256 pBmpBackGround;	    // BMPファイルデータ（ゲーム背景）
+
 int score = 0;                  // スコア
 int hiscore = 0;                // ハイスコア
 
@@ -65,7 +67,7 @@ void Game_Init(void)
     BGTEXTCL(1, 0x0100);	    // BGTEXT1 CLR
 
     // ビットマップファイルの読み込み
-    PutBMP256("space.bmp");
+    PutBMPMemory256(pBmpBackGround);
 
     CM_bg_puts("SCORE", 0, 0, 1);
     CM_bg_puts("HI", 19, 0, 1);
