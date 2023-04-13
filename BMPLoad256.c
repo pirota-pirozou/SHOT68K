@@ -75,6 +75,7 @@ int LoadBMP256(const char *fname)
 	infoHeader.biClrUsed = swap_endian_dword(infoHeader.biClrUsed);
 	infoHeader.biClrImportant = swap_endian_dword(infoHeader.biClrImportant);
 
+	// デバッグ用：ヘッダーの情報を表示します
 	printf("bfType = %X\n", fileHeader.bfType);
 	printf("biBitCount = %d\n", infoHeader.biBitcount);
 	printf("biWidth = %d\n", infoHeader.biWidth);
@@ -112,16 +113,23 @@ int LoadBMP256(const char *fname)
 		pal[i] = col;
 	}
 
-    // imageData を使用して、必要な操作を行います
+	// 画像データをVRAMに転送します
 	WORD_t *vram = (WORD_t *)0xC00000;
-	for (int y = 0; y < infoHeader.biHeight; y++)
+	int width = infoHeader.biWidth;
+	int height = infoHeader.biHeight;
+
+	for (int y = 0; y < height; ++y)
 	{
-		for (int x = 0; x < infoHeader.biWidth; x++)
+		WORD_t* vramLine = &vram[y * 512];
+		const BYTE_t *imageLine = &imageData[(height - y - 1) * width];
+
+		for (int x = 0; x < width; ++x)
 		{
-			vram[y * 512 + x] = imageData[(infoHeader.biHeight - y - 1) * infoHeader.biWidth + x];
+			vramLine[x] = imageLine[x];
 		}
 	}
 
+	// メモリを解放します
     dos_free(imageData);
     return 1;
 }
