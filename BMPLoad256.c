@@ -1,6 +1,13 @@
 // -*-  tab-width : 4 ; mode : C ; encode : ShiftJIS -*-
-// このコードは、２５６色ＢＭＰローダーのソースコード である。
+// Written by Pirota Pirozou, 2023/04
 // BMPLoad256.c
+//
+// このコードは、２５６色ＢＭＰローダーのソースコード である。
+// xdev68k環境で動作するように作られている。
+//
+// BMPLoad256.c / BMPLoad256.h は、自由に改変して自分のプログラムに組み込むことが可能。
+// 著作権表記も必要ない。
+// ただし、このコードを使用したことによるいかなる損害についても、作者は一切の責任を負わない。
 
 #include <iocslib.h>
 #include <doslib.h>
@@ -8,13 +15,17 @@
 
 // xdev68k環境でmalloc()/free()を使うとうまく動作しないので、
 // 代わりに、DOSコールのMALLOC()/MFREE()を使う関数を使用します。
+#define dos_malloc(siz)    	MALLOC((siz))
+#define dos_free(ptr)   	MFREE((int)(ptr))
 
-WORD_t swap_endian_word(WORD_t value)
+// word値のエンディアンをスワップします
+static inline WORD_t swap_endian_word(WORD_t value)
  {
     return (value << 8) | (value >> 8);
 }
 
-DWORD_t swap_endian_dword(DWORD_t value)
+// dword値のエンディアンをスワップします
+static inline DWORD_t swap_endian_dword(DWORD_t value)
  {
     return (value << 24) |
            ((value << 8) & 0x00FF0000) |
@@ -79,11 +90,11 @@ int LoadBMP256(const char *fname)
     }
 
     int imageSize = infoHeader.biWidth * infoHeader.biHeight;
-    BYTE_t *imageData = (BYTE_t *)MALLOC(imageSize);
+    BYTE_t *imageData = (BYTE_t *)dos_malloc(imageSize);
 	if (imageData < 0)
 	{
         fprintf(stderr, "メモリが確保できません。\n");
-		MFREE((int)imageData);
+		dos_free(imageData);
         fclose(fp);
         return 1;
 	}
@@ -111,6 +122,6 @@ int LoadBMP256(const char *fname)
 		}
 	}
 
-    MFREE((int)imageData);
+    dos_free(imageData);
     return 1;
 }

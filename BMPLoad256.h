@@ -1,6 +1,14 @@
 // -*-  tab-width : 4 ; mode : C ; encode : ShiftJIS -*-
-// このコードは、２５６色ＢＭＰローダーのヘッダファイル である。
+// Written by Pirota Pirozou, 2023/04
 // BMPLoad256.h
+//
+// このコードは、２５６色ＢＭＰローダーのヘッダファイル である。
+// xdev68k環境で動作するように作られている。
+//
+// BMPLoad256.c / BMPLoad256.h は、自由に改変して自分のプログラムに組み込むことが可能。
+// 著作権表記も必要ない。
+// ただし、このコードを使用したことによるいかなる損害についても、作者は一切の責任を負わない。
+
 #pragma once
 #ifndef ____BMPLOAD256_H____
 #define ____BMPLOAD256_H__
@@ -50,8 +58,6 @@ extern "C" {
 
 // プロトタイプ宣言
 int LoadBMP256(const char *fname);
-
-
 
 #ifdef __cplusplus
 }

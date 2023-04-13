@@ -21,7 +21,7 @@ void Title_Init(void)
 
     // ビットマップファイルの読み込み
     // グラフィック画面のプライオリティが一番上に来ている
-//    LoadBMP256("space.bmp");
+    LoadBMP256("space.bmp");
 
     sprintf(strtmp, "SCORE %08d", score);
     CM_bg_puts(strtmp, 0, 0, 1);
