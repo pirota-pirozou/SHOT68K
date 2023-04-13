@@ -112,15 +112,18 @@ pBMPFILE256 LoadBMP256(const char *fname)
 /// @brief ２５６色パレットの設定を行います
 /// @param grppal
 /// @param pal
-static setPalette(WORD_t *grppal, RGBQUAD *pal[])
+static void setPalette(WORD_t *grppal, RGBQUAD *pal)
 {
 	for (int i = 0; i < 256; i++)
 	{
-		grppal[i] = (pal[i]->rgbRed >> 3) << 10
-					| (pal[i]->rgbGreen >> 3) << 5
-					| (pal[i]->rgbBlue >> 3);
+		BYTE_t r = pal[i].rgbRed >> 3;
+		BYTE_t g = pal[i].rgbGreen >> 3;
+		BYTE_t b = pal[i].rgbBlue >> 3;
+		WORD_t col = (b << 1) | (r << 6) | (g << 11);
+		grppal[i] = col;
 	}
 }
+
 
 /// @brief メモリ上のBMP256色画像の表示
 /// @param pBMP 画像データのポインタ
@@ -140,6 +143,8 @@ int PutBMPMemory256(pBMPFILE256 pBMP)
 //	setPalette((WORD_t *)0xE82000, &pBMP->palette);
 
 	WORD_t *pal = (WORD_t *)0xE82000;
+	setPalette(pal, pBMP->palette);
+/*
 	for (int i = 0; i < 256; i++)
 	{
 		BYTE_t r = pBMP->palette[i].rgbRed >> 3;
@@ -148,6 +153,7 @@ int PutBMPMemory256(pBMPFILE256 pBMP)
 		WORD_t col = (b << 1) | (r << 6) | (g << 11);
 		pal[i] = col;
 	}
+*/
 
 	// 画像データをVRAMに転送します
 	WORD_t *vram = (WORD_t *)0xC00000;
@@ -238,8 +244,9 @@ int PutBMPFile256(const char *fname)
     fclose(fp);
 	// パレットを実画面に設定します
 //	setPalette((WORD_t *)0xE82000, palette);
-
-	WORD_t *pal = (WORD_t *)0xE82000;
+//	WORD_t *pal = (WORD_t *)0xE82000;
+	setPalette((WORD_t *)0xE82000, (RGBQUAD *)&palette);
+/*
 	for (int i = 0; i < 256; i++)
 	{
 		BYTE_t r = palette[i].rgbRed >> 3;
@@ -248,7 +255,7 @@ int PutBMPFile256(const char *fname)
 		WORD_t col = (b << 1) | (r << 6) | (g << 11);
 		pal[i] = col;
 	}
-
+ */
 	// 画像データをVRAMに転送します
 	WORD_t *vram = (WORD_t *)0xC00000;
 	int width = infoHeader.biWidth;
