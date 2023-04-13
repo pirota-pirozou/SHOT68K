@@ -5,6 +5,7 @@
 
 #include "SceneGame.h"
 #include "ObjManager.h"
+#include "BMPLoad256.h"
 
 #define PAUSE_X 13
 #define PAUSE_Y 15
@@ -62,6 +63,10 @@ void Game_Init(void)
     OBJManager_Init();          // オブジェクトマネージャーの初期化
     CM_sprite_clr();            // スプライトクリア
     BGTEXTCL(1, 0x0100);	    // BGTEXT1 CLR
+
+    // ビットマップファイルの読み込み
+    LoadBMP256("space.bmp");
+
     CM_bg_puts("SCORE", 0, 0, 1);
     CM_bg_puts("HI", 19, 0, 1);
     CM_bg_puts("LEFT", 0, 31, 1);

@@ -19,9 +19,8 @@ void Title_Init(void)
     CM_sprite_clr();            // スプライトクリア
     BGTEXTCL(1, 0x0100);	    // BGTEXT1 CLR
 
-    // ビットマップファイルの読み込み
-    // グラフィック画面のプライオリティが一番上に来ている
-    LoadBMP256("space.bmp");
+    // グラフィック画面０のクリア
+    gcls(0);
 
     sprintf(strtmp, "SCORE %08d", score);
     CM_bg_puts(strtmp, 0, 0, 1);

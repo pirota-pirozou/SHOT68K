@@ -28,6 +28,4 @@ typedef unsigned char BOOL;
 #define FALSE 0
 
 //
-#define FORCE_INLINE __attribute__((__always_inline__)) inline
-
 #endif // __TYPES_H__

@@ -6,6 +6,7 @@
 #define __GAMEPADMANAGER_H__
 
 #include <stdio.h>
+#include "CF_MACRO.h"
 #include "types.h"
 #include "mylib.h"
 

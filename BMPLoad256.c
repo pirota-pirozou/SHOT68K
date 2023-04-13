@@ -76,10 +76,10 @@ int LoadBMP256(const char *fname)
 	infoHeader.biClrImportant = swap_endian_dword(infoHeader.biClrImportant);
 
 	// デバッグ用：ヘッダーの情報を表示します
-	printf("bfType = %X\n", fileHeader.bfType);
-	printf("biBitCount = %d\n", infoHeader.biBitcount);
-	printf("biWidth = %d\n", infoHeader.biWidth);
-	printf("biHeight = %d\n", infoHeader.biHeight);
+//	printf("bfType = %X\n", fileHeader.bfType);
+//	printf("biBitCount = %d\n", infoHeader.biBitcount);
+//	printf("biWidth = %d\n", infoHeader.biWidth);
+//	printf("biHeight = %d\n", infoHeader.biHeight);
 //	INKEY();
 
     if (fileHeader.bfType != 0x4D42 // 'BM'

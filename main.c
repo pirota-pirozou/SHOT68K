@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <doslib.h>
 #include <iocslib.h>
+#include "CF_MACRO.h"
 #include "types.h"
 #include "mylib.h"
 #include "CMSprite.h"
@@ -118,7 +119,7 @@ BOOL load_data(void)
 	// PX2ファイルの読み込み
 	do
 	{
-		px2buf = (pPX2FILE)MALLOC(sizeof(PX2FILE));
+		px2buf = (pPX2FILE)dos_malloc(sizeof(PX2FILE));
 		if (px2buf < 0)
 		{
 			printf("px2buf: メモリが確保できません。\n");
@@ -154,7 +155,7 @@ BOOL load_data(void)
 	if (px2buf != (pPX2FILE) -1)
 	{
 		// メモリ解放
-		MFREE((int)px2buf);
+		dos_free(px2buf);
 		px2buf = (pPX2FILE) -1;
 	}
 

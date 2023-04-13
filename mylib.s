@@ -199,7 +199,7 @@ crtmode = %00000_001				* 256Colors
 	move.b	#crtmode,$E80028		* ( R20 )
 	move.b	#crtmode,$E82401		* 256colors
 	* ビデオコントローラレジスタ
-	move.w	#%00_10_00_01_1110_0100,$E82500	* R1>TEXT>SP>GR ／ GR=Sc0>Sc1
+	move.w	#%00_01_00_10_1110_0100,$E82500	* R1>TEXT>SP>GR ／ GR=Sc0>Sc1 * 20230413 値が間違っていた
 	move.b	#$6F,$E82601			* R2>グラフィック|スプライト表示許可
 
 	move.b	#%1111,$E8002B			* グラフィックスクリーン１，２

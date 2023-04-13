@@ -10,6 +10,7 @@
 #include <string.h>
 #include <doslib.h>
 #include <iocslib.h>
+#include "CF_MACRO.h"
 #include "types.h"
 
 #include "GamePadManager.h"
@@ -18,15 +19,6 @@
 
 // オブジェクトの最大数
 #define OBJ_MAX 128
-
-// switch-case で到達しないマクロ
-#ifdef __GNUC__
-#define __UNREACHABLE__ __builtin_unreachable()
-#endif
-
-#ifdef _MSC_VER
-#define __UNREACHABLE__ __assume(0)
-#endif
 
 // オブジェクトIDの定義
 enum
