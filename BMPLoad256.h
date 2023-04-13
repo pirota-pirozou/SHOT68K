@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef unsigned short WORD_t;
 typedef unsigned int DWORD_t;
@@ -52,12 +53,21 @@ typedef struct {
     BYTE_t rgbReserved;
 } RGBQUAD;
 
+/// @brief ２５６色ビットマップファイル
+typedef struct {
+    BITMAPFILEHEADER fileHeader;
+    BITMAPINFOHEADER infoHeader;
+    RGBQUAD palette[256];
+    BYTE_t imgdata[4];
+} BMPFILE256, *pBMPFILE256;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 // プロトタイプ宣言
-int LoadBMP256(const char *fname);
+pBMPFILE256 LoadBMP256(const char *fname);
+int PutBMP256(const char *fname);
 
 #ifdef __cplusplus
 }

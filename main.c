@@ -9,6 +9,7 @@
 #include "CF_MACRO.h"
 #include "types.h"
 #include "mylib.h"
+#include "BMPLoad256.h"
 #include "CMSprite.h"
 #include "GamePadManager.h"
 #include "SceneManager.h"
@@ -16,6 +17,9 @@
 #include "SceneGame.h"
 
 //#define PAD_TEST		// コメントを外すとゲームパッドの値表示テスト
+
+// 常駐データ
+pBMPFILE256 pBmpTitle = (pBMPFILE256)-1;		// BMPファイルデータ（タイトル）
 
 // シーンの登録テーブル
 static const SSceneWork sceneTable[] =
@@ -25,7 +29,8 @@ static const SSceneWork sceneTable[] =
 };
 
 // プロトタイプ宣言
-BOOL load_data(void);
+BOOL load_pat_data(void);
+BOOL load_title_data(void);
 
 /* main */
 int main(int argc, char *argv[])
@@ -38,8 +43,14 @@ int main(int argc, char *argv[])
 	gcls(1);				// グラフィック画面クリア１
 
 	BOOL bSuccess;
-	bSuccess = load_data();		// データの読み込み
+	bSuccess = load_pat_data();		// パターンデータの読み込み
+	// データの読み込みに失敗したら終了
+	if (!bSuccess)
+	{
+		goto FORCE_QUIT;
+	}
 
+	bSuccess = load_title_data();	// タイトル画面のデータ読み込み
 	// データの読み込みに失敗したら終了
 	if (!bSuccess)
 	{
@@ -101,6 +112,15 @@ FORCE_QUIT:
 	asm volatile ("_PRG_QUIT:\n");
 	super_end();					// ユーザーモードへ復帰
 
+	// タイトル画面のメモリ解放チェック
+	if (pBmpTitle != (pBMPFILE256) -1)
+	{
+		// メモリ解放
+		dos_free(pBmpTitle);
+		pBmpTitle = (pBmpTitle) -1;
+	}
+
+	//
 	printf("プログラムの実行を終了しました。\n");
 
 	return 0;
@@ -110,7 +130,7 @@ FORCE_QUIT:
 // スプライトパターンとパレットデータを読み込み定義する
 // 引数: なし
 // Return: TRUE:成功 FALSE:失敗
-BOOL load_data(void)
+BOOL load_pat_data(void)
 {
 	FILE *fp = NULL;
 	pPX2FILE px2buf = (pPX2FILE) -1;
@@ -158,6 +178,31 @@ BOOL load_data(void)
 		dos_free(px2buf);
 		px2buf = (pPX2FILE) -1;
 	}
+
+	return result;
+}
+
+// タイトル画面のBMPを読み込む
+// 引数: なし
+// Return: TRUE:成功 FALSE:失敗
+BOOL load_title_data(void)
+{
+	FILE *fp = NULL;
+	pBMPFILE256 pBMP = (pBMPFILE256) -1;
+	BOOL result = TRUE;
+
+	// BMPファイルの読み込み
+	do
+	{
+		pBMP = LoadBMP256("space.bmp");
+		if (pBMP < 0)
+		{
+			printf("pBMP: メモリが確保できません。\n");
+			result = FALSE;
+			break;
+		}
+		pBmpTitle = pBMP;
+	} while (0);
 
 	return result;
 }

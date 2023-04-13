@@ -33,12 +33,89 @@ static inline DWORD_t swap_endian_dword(DWORD_t value)
            (value >> 24);
 }
 
-/// @brief BMP256色画像の読み込み
+/// @brief BMP256色画像データの読み込みのみ
+/// @param fname ファイル名
+/// @return 結果
+/// @retval NULL 失敗
+/// @retval それ以外 pBMPFILE256 型のポインタ
+pBMPFILE256 LoadBMP256(const char *fname)
+{
+	FILE *fp = fopen(fname, "rb");
+    if (fp == NULL)
+	{
+        fprintf(stderr, "ファイルを開けませんでした\n");
+        return NULL;
+    }
+
+    BITMAPFILEHEADER fileHeader;
+    BITMAPINFOHEADER infoHeader;
+    RGBQUAD palette[256];
+
+    fread(&fileHeader, sizeof(fileHeader), 1, fp);
+    fread(&infoHeader, sizeof(infoHeader), 1, fp);
+    fread(&palette, sizeof(RGBQUAD), 256, fp);
+
+	// エンディアンのスワップをします
+	// ヘッダーの情報は、リトルエンディアンで記述されています
+	fileHeader.bfType = swap_endian_word(fileHeader.bfType);
+	fileHeader.bfSize = swap_endian_dword(fileHeader.bfSize);
+	fileHeader.bfReserved1 = swap_endian_word(fileHeader.bfReserved1);
+	fileHeader.bfReserved2 = swap_endian_word(fileHeader.bfReserved2);
+	fileHeader.bfOffbits = swap_endian_dword(fileHeader.bfOffbits);
+
+	infoHeader.biSize = swap_endian_dword(infoHeader.biSize);
+	infoHeader.biWidth = swap_endian_dword(infoHeader.biWidth);
+	infoHeader.biHeight = swap_endian_dword(infoHeader.biHeight);
+	infoHeader.biPlanes = swap_endian_word(infoHeader.biPlanes);
+	infoHeader.biBitcount = swap_endian_word(infoHeader.biBitcount);
+	infoHeader.biCompression = swap_endian_dword(infoHeader.biCompression);
+	infoHeader.biSizeimage = swap_endian_dword(infoHeader.biSizeimage);
+	infoHeader.biXPelsPerMeter = swap_endian_dword(infoHeader.biXPelsPerMeter);
+	infoHeader.biYPelsPerMeter = swap_endian_dword(infoHeader.biYPelsPerMeter);
+	infoHeader.biClrUsed = swap_endian_dword(infoHeader.biClrUsed);
+	infoHeader.biClrImportant = swap_endian_dword(infoHeader.biClrImportant);
+
+	// デバッグ用：ヘッダーの情報を表示します
+//	printf("bfType = %X\n", fileHeader.bfType);
+//	printf("biBitCount = %d\n", infoHeader.biBitcount);
+//	printf("biWidth = %d\n", infoHeader.biWidth);
+//	printf("biHeight = %d\n", infoHeader.biHeight);
+//	INKEY();
+
+    if (fileHeader.bfType != 0x4D42 // 'BM'
+		 		|| infoHeader.biBitcount != 8)
+	{
+        fprintf(stderr, "サポートされていないフォーマットです\n");
+        fclose(fp);
+        return NULL;
+    }
+
+    int imageSize = infoHeader.biWidth * infoHeader.biHeight;
+    pBMPFILE256 bmpData = (pBMPFILE256)dos_malloc(imageSize+sizeof(BMPFILE256));
+	if (bmpData < 0)
+	{
+        fprintf(stderr, "メモリが確保できません。\n");
+		dos_free(bmpData);
+        fclose(fp);
+        return NULL;
+	}
+    fread(bmpData->imgdata, 1, imageSize, fp);		// ビットマップを読み込み
+    fclose(fp);
+
+	memcpy(&bmpData->fileHeader, &fileHeader, sizeof(BITMAPFILEHEADER));	// ファイルヘッダーをコピー
+	memcpy(&bmpData->infoHeader, &infoHeader, sizeof(BITMAPINFOHEADER));	// 情報ヘッダーをコピー
+	memcpy(bmpData->palette, palette, sizeof(RGBQUAD)*256);	// パレットをコピー
+
+	return bmpData;
+}
+
+
+/// @brief BMP256色画像の読み込み、表示
 /// @param fname ファイル名
 /// @return 結果
 /// @retval 0 失敗
 /// @retval 1 成功
-int LoadBMP256(const char *fname)
+int PutBMP256(const char *fname)
 {
 	FILE *fp = fopen(fname, "rb");
     if (fp == NULL)

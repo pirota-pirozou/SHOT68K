@@ -9,6 +9,8 @@
 extern int score;                  // スコア
 extern int hiscore;                // ハイスコア
 
+extern pBMPFILE256 pBmpTitle;	    // BMPファイルデータ（タイトル）
+
 static int cou;                    // カウンタ
 
 // タイトルシーン　初期化

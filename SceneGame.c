@@ -65,7 +65,7 @@ void Game_Init(void)
     BGTEXTCL(1, 0x0100);	    // BGTEXT1 CLR
 
     // ビットマップファイルの読み込み
-    LoadBMP256("space.bmp");
+    PutBMP256("space.bmp");
 
     CM_bg_puts("SCORE", 0, 0, 1);
     CM_bg_puts("HI", 19, 0, 1);
