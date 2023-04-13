@@ -68,6 +68,7 @@ void Game_Init(void)
 
     // ビットマップファイルの読み込み
     PutBMPMemory256(pBmpBackGround);
+//    PutBMPFile256("space.bmp");
 
     CM_bg_puts("SCORE", 0, 0, 1);
     CM_bg_puts("HI", 19, 0, 1);

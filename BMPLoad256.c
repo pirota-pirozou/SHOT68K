@@ -109,6 +109,19 @@ pBMPFILE256 LoadBMP256(const char *fname)
 	return bmpData;
 }
 
+/// @brief ２５６色パレットの設定を行います
+/// @param grppal
+/// @param pal
+static setPalette(WORD_t *grppal, RGBQUAD *pal[])
+{
+	for (int i = 0; i < 256; i++)
+	{
+		grppal[i] = (pal[i]->rgbRed >> 3) << 10
+					| (pal[i]->rgbGreen >> 3) << 5
+					| (pal[i]->rgbBlue >> 3);
+	}
+}
+
 /// @brief メモリ上のBMP256色画像の表示
 /// @param pBMP 画像データのポインタ
 /// @return 結果
@@ -123,8 +136,9 @@ int PutBMPMemory256(pBMPFILE256 pBMP)
         fprintf(stderr, "サポートされていないフォーマットです\n");
         return 0;
     }
+	// パレットを実画面に設定します
+//	setPalette((WORD_t *)0xE82000, &pBMP->palette);
 
-	// pallete を使用して、必要な操作を行います
 	WORD_t *pal = (WORD_t *)0xE82000;
 	for (int i = 0; i < 256; i++)
 	{
@@ -222,8 +236,9 @@ int PutBMPFile256(const char *fname)
 	}
     fread(imageData, 1, imageSize, fp);
     fclose(fp);
+	// パレットを実画面に設定します
+//	setPalette((WORD_t *)0xE82000, palette);
 
-	// pallete を使用して、必要な操作を行います
 	WORD_t *pal = (WORD_t *)0xE82000;
 	for (int i = 0; i < 256; i++)
 	{
