@@ -57,7 +57,7 @@ static void to_next_stage(void);
 static void obj_clear_all(void);
 static void initStage(void);
 static void setGameOver(void);
-static void enemiesMoveDown(int);
+static void enemiesMoveDown(int, pSObj,  int);
 
 // ゲームシーン　初期化
 void Game_Init(void)
@@ -125,30 +125,46 @@ void Game_Update(void)
         // 敵の動作を更新。１キャラずつ動かす
         pSObj pObj = ObjManager_GetObj(enemy_move_idx);
         // TODO: 敵の動作を更新する
-        pObj->x += (enemy_move_vx * 4);
-//        pObj->x +=(pObj->vx * 4);
-        if (pObj->x < 8)
+        switch (pObj->stat)
         {
-            // 左端に到達したら
-            pObj->x = 8;
-            // 動作反転
-//            pObj->vx = 1;
-            enemy_move_vx = 1;
-            enemy_wall_touch = 1;
-        }
-        else if (pObj->x > 240)
-        {
-            // 右端に到達したら
-            pObj->x = 240;
-            // 動作反転
-//            pObj->vx = -1;
-            enemy_move_vx = -1;
-            enemy_wall_touch = 1;
-        }
-        else
-        {
-            // 壁に接触していない
-//            enemy_wall_touch = 0;
+            // 通常動作
+            case 0:
+                pObj->x += (pObj->vx * 4);
+                if (pObj->vx < 0 && pObj->x <= 12)
+                {
+                    // 左端に到達したら
+                    pObj->x = 12;
+//                    pObj->stat = 1;
+//                    pObj->vy = 8;
+
+                    // 行全体を下に移動＋反転
+                    enemiesMoveDown(8, pObj, pObj->row);
+//                    enemy_move_idx = ObjManager_FindEnemyNextIdx(0);
+                }
+                if (pObj->vx > 0 && pObj->x >= 240)
+                {
+                    // 右端に到達したら
+                    pObj->x = 240;
+//                    pObj->stat = 1;
+//                    pObj->vy = 8;
+                    // 行全体を下に移動＋反転
+                    enemiesMoveDown(8, pObj, pObj->row);
+//                    enemy_move_idx = ObjManager_FindEnemyNextIdx(0);
+                }
+                break;
+
+            // 下に移動して左右反転
+            case 1:
+                // 下に移動
+                // 動作反転
+                pObj->vx = -pObj->vx;
+                pObj->y += pObj->vy;
+                pObj->stat = 0;
+                break;
+
+            // 到達しない
+            default:
+                __UNREACHABLE__;
         }
         // キャラ絵切替
         pObj->anm_idx ^= 1;
@@ -165,26 +181,6 @@ void Game_Update(void)
         }
         // 次のキャラへ
         int next_idx = ObjManager_FindEnemyNextIdx(enemy_move_idx);
-        if (next_idx < enemy_move_idx)
-        {
-            // 全ての敵の動作が終わったら
-            if (enemy_wall_touch)
-            {
-                // 壁に接触したら
-                // 敵全体を下に移動
-                enemy_wall_touch = 0;
-//                enemiesMoveDown(8);
-            }
-        }
-        else
-        {
-            // 壁にタッチしたらキャラを下に移動
-            if (enemy_wall_touch)
-            {
-                pObj->y += 8;
-            }
-
-        }
         enemy_move_idx = next_idx;
         break;
     case STATUS_MISS:
@@ -526,6 +522,10 @@ static void setupEnemies(void)
             int16 _y = (i * 24) + 24;
 
             pSObj pObj = ObjManager_Make(_id, _x, _y);
+            pObj->row = i;      // 敵の行番号
+            pObj->col = j;      // 敵の列番号
+            pObj->stat = 0;     // 敵の状態
+
             enemy_left++;
         }
     }
@@ -535,7 +535,9 @@ static void setupEnemies(void)
 /// @brief 敵全体を下に下降させる
 //////////////////////////////////////
 /// @param add 下降ドット数
-static void enemiesMoveDown(int add)
+/// @param pCaller 発行元オブジェクト
+/// @param _row 下降させる行番号
+static void enemiesMoveDown(int add, pSObj pCaller, int _row)
 {
     for (int i = 0; i < OBJ_MAX; i++)
     {
@@ -544,7 +546,14 @@ static void enemiesMoveDown(int add)
             pObj->id == OBJ_ID_ENEMY2 ||
             pObj->id == OBJ_ID_ENEMY3)
         {
-            pObj->y += add;
+//            if (pObj == pCaller) continue; // 発行元は除外
+//            if (pObj->row == _row)
+             {
+                pObj->stat = 1; // 下降フラグを立てる
+                pObj->vy = add; // 下降ドット数を設定
+                // 動作反転
+//                pObj->vx = -pObj->vx;
+            }
         }
     }
 }

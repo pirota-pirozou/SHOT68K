@@ -52,15 +52,19 @@ struct _tObj
     int16 y;                // Y座標
     uint16 pat;             // パターン番号
     uint16 plane;           // プレーン番号
-    uint16 vx;              // X方向
+    int16 vx;               // X方向
+    int16 vy;               // Y方向
+    uint16 stat;            // 移動状態 0=通常 1=下＋方向転換
     ObjFuncPtr Update;      // 更新関数
     ObjFuncPtr Draw;        // 描画関数
     uint16 anm_spd;         // アニメーション速度
     uint16 anm_num;         // アニメーション枚数
     uint16 anm_cou;         // アニメーショタイミングカウンタ
     uint16 anm_idx;         // アニメーションインデックス
+    uint16 row;             // 行数
+    uint16 col;             // 列数
 
-    uint8  padding[128-28]; // 128バイトになるようにパディング
+    uint8  padding[128-36]; // 128バイトになるようにパディング
 };
 typedef SObj* pSObj;
 
