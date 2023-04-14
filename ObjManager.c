@@ -5,7 +5,7 @@
 #include "SceneGame.h"
 #include "ObjManager.h"
 
-pSObj g_pObj = (pSObj)-1;             // オブジェクトのポインタ配列
+pSObj g_pObj = NULL;             // オブジェクトのポインタ配列
 
 // プロトタイプ宣言
 static volatile void ObjFunc_Null(pSObj pObj);
@@ -19,7 +19,7 @@ static void ObjFunc_DrawAnm(pSObj pObj);
 void OBJManager_Init()
 {
     // オブジェクトのメモリを確保
-    g_pObj = (pSObj)MALLOC(sizeof(SObj) * OBJ_MAX);
+    g_pObj = (pSObj)malloc(sizeof(SObj) * OBJ_MAX);
     if (g_pObj < 0)
     {
         // 確保失敗
@@ -81,8 +81,8 @@ void ObjManager_Draw()
 void ObjManager_End()
 {
     // オブジェクトのメモリを解放
-    MFREE((int)g_pObj);
-    g_pObj = (pSObj)-1;
+    free(g_pObj);
+    g_pObj = NULL;
 }
 
 /////////////////////////////////

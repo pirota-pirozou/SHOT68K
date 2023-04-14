@@ -15,8 +15,9 @@
 
 // xdev68k環境でmalloc()/free()を使うとうまく動作しないので、
 // 代わりに、DOSコールのMALLOC()/MFREE()を使う関数を使用します。
-#define dos_malloc(siz)    	MALLOC((siz))
-#define dos_free(ptr)   	MFREE((int)(ptr))
+// ※allmem() により通常のmalloc()/free()が使えるのでコメントアウト
+//#define dos_malloc(siz)    	MALLOC((siz))
+//#define dos_free(ptr)   	MFREE((int)(ptr))
 
 #define FORCE_INLINE __attribute__((__always_inline__)) inline
 

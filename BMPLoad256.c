@@ -9,14 +9,13 @@
 // 著作権表記も必要ない。
 // ただし、このコードを使用したことによるいかなる損害についても、作者は一切の責任を負わない。
 
-#include <iocslib.h>
-#include <doslib.h>
 #include "BMPLoad256.h"
 
 // xdev68k環境でmalloc()/free()を使うとうまく動作しないので、
 // 代わりに、DOSコールのMALLOC()/MFREE()を使う関数を使用します。
-#define dos_malloc(siz)    	MALLOC((siz))
-#define dos_free(ptr)   	MFREE((int)(ptr))
+// ※allmem() により通常のmalloc()/free()が使えるのでコメントアウト
+//#define dos_malloc(siz)    	MALLOC((siz))
+//#define dos_free(ptr)   	MFREE((int)(ptr))
 
 // word値のエンディアンをスワップします
 static inline WORD_t swap_endian_word(WORD_t value)
@@ -91,11 +90,11 @@ pBMPFILE256 LoadBMP256(const char *fname)
     }
 
     int imageSize = infoHeader.biWidth * infoHeader.biHeight;
-    pBMPFILE256 bmpData = (pBMPFILE256)dos_malloc(imageSize+sizeof(BMPFILE256));
+    pBMPFILE256 bmpData = (pBMPFILE256)malloc(imageSize+sizeof(BMPFILE256));
 	if (bmpData < 0)
 	{
         fprintf(stderr, "メモリが確保できません。\n");
-		dos_free(bmpData);
+		free(bmpData);
         fclose(fp);
         return NULL;
 	}
@@ -232,11 +231,10 @@ int PutBMPFile256(const char *fname)
     }
 
     int imageSize = infoHeader.biWidth * infoHeader.biHeight;
-    BYTE_t *imageData = (BYTE_t *)dos_malloc(imageSize);
+    BYTE_t *imageData = (BYTE_t *)malloc(imageSize);
 	if (imageData < 0)
 	{
         fprintf(stderr, "メモリが確保できません。\n");
-		dos_free(imageData);
         fclose(fp);
         return 1;
 	}
@@ -273,6 +271,6 @@ int PutBMPFile256(const char *fname)
 	}
 
 	// メモリを解放します
-    dos_free(imageData);
+    free(imageData);
     return 1;
 }

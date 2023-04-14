@@ -35,6 +35,7 @@ BOOL load_title_data(void);
 /* main */
 int main(int argc, char *argv[])
 {
+	allmem();				// mallocの初期化
 	super_begin();			// スーパーバイザーモードへ
 
 	screen_init();			// 画面初期化
@@ -116,7 +117,7 @@ FORCE_QUIT:
 	if (pBmpBackGround != (pBMPFILE256) -1)
 	{
 		// メモリ解放
-		dos_free(pBmpBackGround);
+		free(pBmpBackGround);
 		pBmpBackGround = (pBmpBackGround) -1;
 	}
 
@@ -133,13 +134,13 @@ FORCE_QUIT:
 BOOL load_pat_data(void)
 {
 	FILE *fp = NULL;
-	pPX2FILE px2buf = (pPX2FILE) -1;
+	pPX2FILE px2buf = NULL;
 	BOOL result = TRUE;
 
 	// PX2ファイルの読み込み
 	do
 	{
-		px2buf = (pPX2FILE)dos_malloc(sizeof(PX2FILE));
+		px2buf = (pPX2FILE)malloc(sizeof(PX2FILE));
 		if (px2buf < 0)
 		{
 			printf("px2buf: メモリが確保できません。\n");
@@ -172,11 +173,11 @@ BOOL load_pat_data(void)
 		fclose(fp);
 		fp = NULL;
 	}
-	if (px2buf != (pPX2FILE) -1)
+	if (px2buf != NULL)
 	{
 		// メモリ解放
-		dos_free(px2buf);
-		px2buf = (pPX2FILE) -1;
+		free(px2buf);
+		px2buf = NULL;
 	}
 
 	return result;
@@ -188,7 +189,7 @@ BOOL load_pat_data(void)
 BOOL load_title_data(void)
 {
 	FILE *fp = NULL;
-	pBMPFILE256 pBMP = (pBMPFILE256) -1;
+	pBMPFILE256 pBMP = NULL;
 	BOOL result = TRUE;
 
 	// BMPファイルの読み込み
