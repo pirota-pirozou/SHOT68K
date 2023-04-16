@@ -195,7 +195,7 @@ BOOL load_title_data(void)
 	do
 	{
 		pBMP = LoadBMP256("space.bmp");
-		if (pBMP < 0)
+		if (pBMP == NULL)
 		{
 			printf("pBMP: ƒƒ‚ƒŠ‚ªŠm•Û‚Å‚«‚Ü‚¹‚ñB\n");
 			result = FALSE;
