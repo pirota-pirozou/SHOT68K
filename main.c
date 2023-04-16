@@ -19,7 +19,7 @@
 //#define PAD_TEST		// コメントを外すとゲームパッドの値表示テスト
 
 // 常駐データ
-pBMPFILE256 pBmpBackGround = (pBMPFILE256)-1;		// BMPファイルデータ（タイトル）
+pBMPFILE256 pBmpBackGround = NULL;		// BMPファイルデータ（タイトル）
 
 // シーンの登録テーブル
 static const SSceneWork sceneTable[] =
@@ -104,21 +104,20 @@ int main(int argc, char *argv[])
 	}
 	Scene_Clear();			// ゲームループから抜けるときシーンのクリア
 
-	CM_sprite_off();		// スプライト表示管理ＯＦＦ
-
 	// プログラム終了
 	// プログラムのAbortアドレスを強引にここに設定する
 FORCE_QUIT:
-	asm volatile (".xdef _PRG_QUIT\n");
-	asm volatile ("_PRG_QUIT:\n");
+	asm volatile (".xdef _PRG_QUIT\n_PRG_QUIT:\n");
+	CM_sprite_off();		// スプライト表示管理ＯＦＦ
+
 	super_end();					// ユーザーモードへ復帰
 
 	// タイトル画面のメモリ解放チェック
-	if (pBmpBackGround != (pBMPFILE256) -1)
+	if (pBmpBackGround != NULL)
 	{
 		// メモリ解放
 		free(pBmpBackGround);
-		pBmpBackGround = (pBmpBackGround) -1;
+		pBmpBackGround = NULL;
 	}
 
 	//
