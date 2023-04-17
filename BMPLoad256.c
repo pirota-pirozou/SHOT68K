@@ -60,15 +60,15 @@ pBMPFILE256 LoadBMP256(const char *fname)
 	fileHeader.bfSize = swap_endian_dword(fileHeader.bfSize);
 	fileHeader.bfReserved1 = swap_endian_word(fileHeader.bfReserved1);
 	fileHeader.bfReserved2 = swap_endian_word(fileHeader.bfReserved2);
-	fileHeader.bfOffbits = swap_endian_dword(fileHeader.bfOffbits);
+	fileHeader.bfOffBits = swap_endian_dword(fileHeader.bfOffBits);
 
 	infoHeader.biSize = swap_endian_dword(infoHeader.biSize);
 	infoHeader.biWidth = swap_endian_dword(infoHeader.biWidth);
 	infoHeader.biHeight = swap_endian_dword(infoHeader.biHeight);
 	infoHeader.biPlanes = swap_endian_word(infoHeader.biPlanes);
-	infoHeader.biBitcount = swap_endian_word(infoHeader.biBitcount);
+	infoHeader.biBitCount = swap_endian_word(infoHeader.biBitCount);
 	infoHeader.biCompression = swap_endian_dword(infoHeader.biCompression);
-	infoHeader.biSizeimage = swap_endian_dword(infoHeader.biSizeimage);
+	infoHeader.biSizeImage = swap_endian_dword(infoHeader.biSizeImage);
 	infoHeader.biXPelsPerMeter = swap_endian_dword(infoHeader.biXPelsPerMeter);
 	infoHeader.biYPelsPerMeter = swap_endian_dword(infoHeader.biYPelsPerMeter);
 	infoHeader.biClrUsed = swap_endian_dword(infoHeader.biClrUsed);
@@ -82,7 +82,7 @@ pBMPFILE256 LoadBMP256(const char *fname)
 //	INKEY();
 
     if (fileHeader.bfType != 0x4D42 // 'BM'
-		 		|| infoHeader.biBitcount != 8)
+		 		|| infoHeader.biBitCount != 8)
 	{
         fprintf(stderr, "サポートされていないフォーマットです\n");
         fclose(fp);
@@ -133,7 +133,7 @@ int PutBMPMemory256(pBMPFILE256 pBMP)
 {
 	// フォーマットチェック
     if (pBMP->fileHeader.bfType != 0x4D42 // 'BM'
-		 		|| pBMP->infoHeader.biBitcount != 8)
+		 		|| pBMP->infoHeader.biBitCount != 8)
 	{
         fprintf(stderr, "サポートされていないフォーマットです\n");
         return 0;
@@ -201,15 +201,15 @@ int PutBMPFile256(const char *fname)
 	fileHeader.bfSize = swap_endian_dword(fileHeader.bfSize);
 	fileHeader.bfReserved1 = swap_endian_word(fileHeader.bfReserved1);
 	fileHeader.bfReserved2 = swap_endian_word(fileHeader.bfReserved2);
-	fileHeader.bfOffbits = swap_endian_dword(fileHeader.bfOffbits);
+	fileHeader.bfOffBits = swap_endian_dword(fileHeader.bfOffBits);
 
 	infoHeader.biSize = swap_endian_dword(infoHeader.biSize);
 	infoHeader.biWidth = swap_endian_dword(infoHeader.biWidth);
 	infoHeader.biHeight = swap_endian_dword(infoHeader.biHeight);
 	infoHeader.biPlanes = swap_endian_word(infoHeader.biPlanes);
-	infoHeader.biBitcount = swap_endian_word(infoHeader.biBitcount);
+	infoHeader.biBitCount = swap_endian_word(infoHeader.biBitCount);
 	infoHeader.biCompression = swap_endian_dword(infoHeader.biCompression);
-	infoHeader.biSizeimage = swap_endian_dword(infoHeader.biSizeimage);
+	infoHeader.biSizeImage = swap_endian_dword(infoHeader.biSizeImage);
 	infoHeader.biXPelsPerMeter = swap_endian_dword(infoHeader.biXPelsPerMeter);
 	infoHeader.biYPelsPerMeter = swap_endian_dword(infoHeader.biYPelsPerMeter);
 	infoHeader.biClrUsed = swap_endian_dword(infoHeader.biClrUsed);
@@ -223,7 +223,7 @@ int PutBMPFile256(const char *fname)
 //	INKEY();
 
     if (fileHeader.bfType != 0x4D42 // 'BM'
-		 		|| infoHeader.biBitcount != 8)
+		 		|| infoHeader.biBitCount != 8)
 	{
         fprintf(stderr, "サポートされていないフォーマットです\n");
         fclose(fp);
