@@ -44,8 +44,7 @@ static int status_count;        // 状態遷移カウンタ
 
 // 敵の動作　管理用
 static int enemy_move_idx;      // 敵の動作インデックス
-static int16 enemy_move_vx;     // 敵の動作方向
-static int16 enemy_wall_touch;  // 敵の壁接触フラグ
+static uint16 enemy_touch_wall; // 敵が壁に触れたフラグ
 static int stage;               // ステージ
 static int player_left;         // 残機
 
@@ -57,7 +56,7 @@ static void to_next_stage(void);
 static void obj_clear_all(void);
 static void initStage(void);
 static void setGameOver(void);
-static void enemiesMoveDown(int, pSObj,  int);
+static void enemiesMoveDown(int, pSObj);
 
 // ゲームシーン　初期化
 void Game_Init(void)
@@ -86,10 +85,6 @@ void Game_Init(void)
     status = STATUS_NORMAL;
     status_count = 0;
 
-    // 敵の動作を初期化
-    enemy_move_vx = 1;
-    enemy_wall_touch = 0;
-
     // プレイヤーの生成
     pObjPlayer = ObjManager_Make(OBJ_ID_PLAYER, 128, 256-16);
     // 敵の生成
@@ -97,6 +92,7 @@ void Game_Init(void)
 
     // 敵の動作インデックスを初期化
     enemy_move_idx = ObjManager_FindEnemyIdx();
+    enemy_touch_wall = 0;       // 敵が壁に触れたフラグをクリア
 }
 
 // ゲームシーン　更新
@@ -124,32 +120,35 @@ void Game_Update(void)
         if (enemy_move_idx < 0) break;
         // 敵の動作を更新。１キャラずつ動かす
         pSObj pObj = ObjManager_GetObj(enemy_move_idx);
-        // TODO: 敵の動作を更新する
+        // 敵の動作を更新する
         switch (pObj->stat)
         {
             // 通常動作
             case 0:
                 pObj->x += (pObj->vx * 4);
-                if (pObj->vx < 0 && pObj->x <= 12)
+                if (pObj->vx < 0 && pObj->x < 12)
                 {
                     // 左端に到達したら
                     pObj->x = 12;
-//                    pObj->stat = 1;
-//                    pObj->vy = 8;
-
+                    enemy_touch_wall |= 0x01;   // 左壁に触れたフラグをセット
                     // 行全体を下に移動＋反転
-                    enemiesMoveDown(8, pObj, pObj->row);
-//                    enemy_move_idx = ObjManager_FindEnemyNextIdx(0);
+//                    enemiesMoveDown(8, pObj);
+                    // 動作反転
+//                    pObj->vx = -pObj->vx;
+//                    pObj->y += pObj->vy;
+//                    pObj->stat = 0;
                 }
                 if (pObj->vx > 0 && pObj->x >= 240)
                 {
                     // 右端に到達したら
                     pObj->x = 240;
-//                    pObj->stat = 1;
-//                    pObj->vy = 8;
-                    // 行全体を下に移動＋反転
-                    enemiesMoveDown(8, pObj, pObj->row);
-//                    enemy_move_idx = ObjManager_FindEnemyNextIdx(0);
+                    enemy_touch_wall |= 0x02;   // 右壁に触れたフラグをセット
+
+//                    enemiesMoveDown(8, pObj);
+                    // 動作反転
+//                    pObj->vx = -pObj->vx;
+//                    pObj->y += pObj->vy;
+//                    pObj->stat = 0;
                 }
                 break;
 
@@ -181,7 +180,30 @@ void Game_Update(void)
         }
         // 次のキャラへ
         int next_idx = ObjManager_FindEnemyNextIdx(enemy_move_idx);
-        enemy_move_idx = next_idx;
+        if (next_idx >= 0)
+        {
+            // 次のキャラがいたら
+            if (next_idx <= enemy_move_idx)
+            {
+                // 全てのキャラが動き終わったら
+                // TODO:動作反転チェック
+                if (enemy_touch_wall & 0x01)
+                {
+                    // 左壁に触れていたら
+                    enemiesMoveDown(8, pObj);
+                    enemy_touch_wall &= ~0x01;
+                }
+
+                if (enemy_touch_wall & 0x02)
+                {
+                    // 右壁に触れていたら
+                    enemiesMoveDown(8, pObj);
+                    enemy_touch_wall &= ~0x02;
+                }
+                break;
+            }
+            enemy_move_idx = next_idx;
+        }
         break;
     case STATUS_MISS:
         // ミス
@@ -224,7 +246,6 @@ void Game_Update(void)
 // ゲームシーン　描画
 void Game_Draw(void)
 {
-//    CM_bg_puts("GAME_DRAW()", 0, 2, 1);
     ObjManager_Draw();      // オブジェクトマネージャーの描画
 }
 
@@ -311,11 +332,6 @@ void ObjFunc_Player(pSObj pObj)
     // 弾発射判定
     if (pad_trg & PAD_B)
     {
-        // 自機爆発エフェクトのテスト
-//         ObjManager_Make(OBJ_ID_PEFFECT,
-//            pObj->x, pObj->y-32);
-
-
         // Bボタンで弾発射
         if (pObjBullet == NULL)
         {
@@ -536,8 +552,7 @@ static void setupEnemies(void)
 //////////////////////////////////////
 /// @param add 下降ドット数
 /// @param pCaller 発行元オブジェクト
-/// @param _row 下降させる行番号
-static void enemiesMoveDown(int add, pSObj pCaller, int _row)
+static void enemiesMoveDown(int add, pSObj pCaller)
 {
     for (int i = 0; i < OBJ_MAX; i++)
     {
@@ -546,14 +561,8 @@ static void enemiesMoveDown(int add, pSObj pCaller, int _row)
             pObj->id == OBJ_ID_ENEMY2 ||
             pObj->id == OBJ_ID_ENEMY3)
         {
-//            if (pObj == pCaller) continue; // 発行元は除外
-//            if (pObj->row == _row)
-             {
-                pObj->stat = 1; // 下降フラグを立てる
-                pObj->vy = add; // 下降ドット数を設定
-                // 動作反転
-//                pObj->vx = -pObj->vx;
-            }
+            pObj->stat = 1; // 下降フラグを立てる
+            pObj->vy = add; // 下降ドット数を設定
         }
     }
 }
@@ -588,11 +597,6 @@ static void initStage(void)
 
     // ゲーム状態の初期化
     status = STATUS_NORMAL;
-
-    // 敵の動作を初期化
-    enemy_move_vx = 1;
-    enemy_wall_touch = 0;
-
 }
 
 //////////////////////////////////////

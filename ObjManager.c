@@ -163,7 +163,7 @@ pSObj ObjManager_Make(int _id, int _x, int _y)
         // 敵３
     case OBJ_ID_ENEMY3:
         pObj->pat = 0x0147;         // 敵３パターン
-        pObj->anm_spd = 4;          // アニメーション速度
+        pObj->anm_spd =     4;          // アニメーション速度
         pObj->anm_num = 2;          // アニメーション枚数
         pObj->anm_cou = 0;
         pObj->anm_idx = 0;
@@ -246,16 +246,17 @@ int ObjManager_FindEnemyNextIdx(int idx)
 {
     // 空きオブジェクトを探す
     int i;
-    int n = (idx + 1) & (OBJ_MAX - 1);
+    int n = (idx + 1);
     int ret = -1;
     for (i = 0; i < OBJ_MAX; i++)
     {
+        n &= (OBJ_MAX - 1);
         if (g_pObj[n].id >= OBJ_ID_ENEMY1 &&
             g_pObj[n].id <= OBJ_ID_ENEMY3)
         {
             return n;
         }
-        n = (n + 1) & (OBJ_MAX - 1);
+        n++;
     }
 
     return -1;
