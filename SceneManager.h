@@ -26,33 +26,6 @@ typedef struct
     FuncPtr0 Clear;
 } SSceneWork, *pSSceneWork;
 
-// 便利なマクロ
-#define clamp(value,min,max) \
-    ({ typeof (value) _value = (value); \
-       typeof (min) _min = (min); \
-       typeof (max) _max = (max); \
-       _value < _min ? _min : _value > _max ? _max : _value; })
-
-#undef max
-#define max(x,y) \
-       ({ typeof (x) _x = (x); \
-           typeof (y) _y = (y); \
-         _x > _y ? _x : _y; })
-
-#undef min
-#define min(x,y) \
-       ({ typeof (x) _x = (x); \
-           typeof (y) _y = (y); \
-         _x < _y ? _x : _y; })
-
-#define abs(x) \
-       ({ typeof (x) _x = (x); \
-         _x < 0 ? -_x : _x; })
-
-#define sgn(x) \
-       ({ typeof (x) _x = (x); \
-         _x < 0 ? -1 : 1; })
-
 // シーンID
 enum
 {
