@@ -6,6 +6,8 @@
 #include "SceneTitle.h"
 #include "BMPLoad256.h"
 
+extern pBMPFILE256 pBmpBackTitle;	// BMPファイルデータ（タイトル）
+
 extern int score;                  // スコア
 extern int hiscore;                // ハイスコア
 
@@ -21,6 +23,8 @@ void Title_Init(void)
 
     // グラフィック画面０のクリア
     gcls(0);
+    // ビットマップファイルの読み込み
+    PutBMPMemory256(pBmpBackTitle);
 
     sprintf(strtmp, "SCORE %08d", score);
     CM_bg_puts(strtmp, 0, 0, 1);

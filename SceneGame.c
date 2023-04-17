@@ -64,10 +64,10 @@ void Game_Init(void)
     OBJManager_Init();          // オブジェクトマネージャーの初期化
     CM_sprite_clr();            // スプライトクリア
     BGTEXTCL(1, 0x0100);	    // BGTEXT1 CLR
-
-    // ビットマップファイルの読み込み
+    // グラフィック画面０のクリア
+    gcls(0);
+    // ビットマップファイルの表示
     PutBMPMemory256(pBmpBackGround);
-//    PutBMPFile256("space.bmp");
 
     CM_bg_puts("SCORE", 0, 0, 1);
     CM_bg_puts("HI", 19, 0, 1);

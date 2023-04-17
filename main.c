@@ -19,7 +19,8 @@
 //#define PAD_TEST		// コメントを外すとゲームパッドの値表示テスト
 
 // 常駐データ
-pBMPFILE256 pBmpBackGround = NULL;		// BMPファイルデータ（タイトル）
+pBMPFILE256 pBmpBackGround = NULL;		// BMPファイルデータ（ゲーム背景）
+pBMPFILE256 pBmpBackTitle = NULL;		// BMPファイルデータ（タイトル）
 
 // シーンの登録テーブル
 static const SSceneWork sceneTable[] =
@@ -31,6 +32,7 @@ static const SSceneWork sceneTable[] =
 // プロトタイプ宣言
 BOOL load_pat_data(void);
 BOOL load_title_data(void);
+BOOL load_gamebg_data(void);
 
 /* main */
 int main(int argc, char *argv[])
@@ -52,6 +54,13 @@ int main(int argc, char *argv[])
 	}
 
 	bSuccess = load_title_data();	// タイトル画面のデータ読み込み
+	// データの読み込みに失敗したら終了
+	if (!bSuccess)
+	{
+		goto FORCE_QUIT;
+	}
+
+	bSuccess = load_gamebg_data();	// ゲーム背景画面のデータ読み込み
 	// データの読み込みに失敗したら終了
 	if (!bSuccess)
 	{
@@ -112,12 +121,19 @@ FORCE_QUIT:
 
 	super_end();					// ユーザーモードへ復帰
 
-	// タイトル画面のメモリ解放チェック
+	// 背景画面のメモリ解放チェック
 	if (pBmpBackGround != NULL)
 	{
 		// メモリ解放
 		free(pBmpBackGround);
 		pBmpBackGround = NULL;
+	}
+	// タイトル画面のメモリ解放チェック
+	if (pBmpBackTitle != NULL)
+	{
+		// メモリ解放
+		free(pBmpBackTitle);
+		pBmpBackTitle = NULL;
 	}
 
 	//
@@ -182,10 +198,10 @@ BOOL load_pat_data(void)
 	return result;
 }
 
-// タイトル画面のBMPを読み込む
+// ゲーム背景のBMPを読み込む
 // 引数: なし
 // Return: TRUE:成功 FALSE:失敗
-BOOL load_title_data(void)
+BOOL load_gamebg_data(void)
 {
 	FILE *fp = NULL;
 	pBMPFILE256 pBMP = NULL;
@@ -202,6 +218,31 @@ BOOL load_title_data(void)
 			break;
 		}
 		pBmpBackGround = pBMP;
+	} while (0);
+
+	return result;
+}
+
+// タイトル画面のBMPを読み込む
+// 引数: なし
+// Return: TRUE:成功 FALSE:失敗
+BOOL load_title_data(void)
+{
+	FILE *fp = NULL;
+	pBMPFILE256 pBMP = NULL;
+	BOOL result = TRUE;
+
+	// BMPファイルの読み込み
+	do
+	{
+		pBMP = LoadBMP256("title.bmp");
+		if (pBMP == NULL)
+		{
+			printf("pBMP: メモリが確保できません。\n");
+			result = FALSE;
+			break;
+		}
+		pBmpBackTitle = pBMP;
 	} while (0);
 
 	return result;
