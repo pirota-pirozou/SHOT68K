@@ -56,7 +56,7 @@ static void to_next_stage(void);
 static void obj_clear_all(void);
 static void initStage(void);
 static void setGameOver(void);
-static void enemiesMoveDown(int, pSObj);
+static void enemiesMoveDown(int);
 
 // ゲームシーン　初期化
 void Game_Init(void)
@@ -87,12 +87,15 @@ void Game_Init(void)
 
     // プレイヤーの生成
     pObjPlayer = ObjManager_Make(OBJ_ID_PLAYER, 128, 256-16);
+    initStage();                // ステージの初期化
+/*
     // 敵の生成
     setupEnemies();
 
     // 敵の動作インデックスを初期化
     enemy_move_idx = ObjManager_FindEnemyIdx();
     enemy_touch_wall = 0;       // 敵が壁に触れたフラグをクリア
+ */
 }
 
 // ゲームシーン　更新
@@ -126,29 +129,17 @@ void Game_Update(void)
             // 通常動作
             case 0:
                 pObj->x += (pObj->vx * 4);
-                if (pObj->vx < 0 && pObj->x < 12)
+                if (pObj->vx < 0 && pObj->x <= 12)
                 {
                     // 左端に到達したら
                     pObj->x = 12;
                     enemy_touch_wall |= 0x01;   // 左壁に触れたフラグをセット
-                    // 行全体を下に移動＋反転
-//                    enemiesMoveDown(8, pObj);
-                    // 動作反転
-//                    pObj->vx = -pObj->vx;
-//                    pObj->y += pObj->vy;
-//                    pObj->stat = 0;
                 }
                 if (pObj->vx > 0 && pObj->x >= 240)
                 {
                     // 右端に到達したら
                     pObj->x = 240;
                     enemy_touch_wall |= 0x02;   // 右壁に触れたフラグをセット
-
-//                    enemiesMoveDown(8, pObj);
-                    // 動作反転
-//                    pObj->vx = -pObj->vx;
-//                    pObj->y += pObj->vy;
-//                    pObj->stat = 0;
                 }
                 break;
 
@@ -180,30 +171,33 @@ void Game_Update(void)
         }
         // 次のキャラへ
         int next_idx = ObjManager_FindEnemyNextIdx(enemy_move_idx);
+        // デバッグ表示
+        char strtmp[128];
+        sprintf(strtmp, "NEXT_IDX=%3d", next_idx);
+        CM_bg_puts(strtmp, 0, 1, 1);
         if (next_idx >= 0)
         {
             // 次のキャラがいたら
             if (next_idx <= enemy_move_idx)
             {
                 // 全てのキャラが動き終わったら
-                // TODO:動作反転チェック
+                // 動作反転チェック
                 if (enemy_touch_wall & 0x01)
                 {
                     // 左壁に触れていたら
-                    enemiesMoveDown(8, pObj);
+                    enemiesMoveDown(8);
                     enemy_touch_wall &= ~0x01;
                 }
 
                 if (enemy_touch_wall & 0x02)
                 {
                     // 右壁に触れていたら
-                    enemiesMoveDown(8, pObj);
+                    enemiesMoveDown(8);
                     enemy_touch_wall &= ~0x02;
                 }
-                break;
             }
-            enemy_move_idx = next_idx;
         }
+        enemy_move_idx = next_idx;
         break;
     case STATUS_MISS:
         // ミス
@@ -551,8 +545,7 @@ static void setupEnemies(void)
 /// @brief 敵全体を下に下降させる
 //////////////////////////////////////
 /// @param add 下降ドット数
-/// @param pCaller 発行元オブジェクト
-static void enemiesMoveDown(int add, pSObj pCaller)
+static void enemiesMoveDown(int add)
 {
     for (int i = 0; i < OBJ_MAX; i++)
     {
@@ -587,13 +580,17 @@ static void to_next_stage(void)
 static void initStage(void)
 {
     // オブジェクトの全消去
-     obj_clear_all();
+//     obj_clear_all();
 
     // 新たにプレイヤーの生成
-    pObjPlayer = ObjManager_Make(OBJ_ID_PLAYER, 128, 256-16);
+//    pObjPlayer = ObjManager_Make(OBJ_ID_PLAYER, 128, 256-16);
 
     // 敵の初期配置
     setupEnemies();
+
+    // 敵の動作インデックスを初期化
+    enemy_move_idx = ObjManager_FindEnemyIdx();
+    enemy_touch_wall = 0;       // 敵が壁に触れたフラグをクリア
 
     // ゲーム状態の初期化
     status = STATUS_NORMAL;
