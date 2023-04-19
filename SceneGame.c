@@ -103,10 +103,25 @@ void Game_Init(void)
 /// @brief “G‚Ì’e‚ð”­ŽË‚·‚é
 static void EBullet_Make(void)
 {
-    pSObj pObj, pEBullet;
+    pSObj pObj = NULL;
+    pSObj pEBullet = NULL;
     // “G‚Ì’e‚ð”­ŽË
     int col = rand() % ENEMY_SETUP_COL;
-    pObj = enemy_atack_tbl[col];
+    for (int i=0; i<ENEMY_SETUP_COL; i++)
+    {
+        pObj = enemy_atack_tbl[col];
+        if (pObj == NULL)
+        {
+            col++;
+            col %= ENEMY_SETUP_COL;
+            continue;
+        }
+        else
+        {
+            pObj = enemy_atack_tbl[col];
+            break;
+        }
+    }
     if (pObj == NULL) return;               // “G‚ª‘¶Ý‚µ‚È‚¯‚ê‚ÎƒŠƒ^[ƒ“
 
     // “G’e‚ð¶¬
@@ -196,9 +211,8 @@ void Game_Update(void)
             // —”‚Å“G‚ÌƒVƒ‡ƒbƒg‚ð”­ŽË
             if ((rand() % 256) < 5)
             {
-                // 5%‚ÌŠm—¦‚Å“G’e‚ð”­ŽË
+                // 5/256‚ÌŠm—¦‚Å“G’e‚ð”­ŽË
                 EBullet_Make();
-
             }
 
             // ŽŸ‚ÌƒLƒƒƒ‰‚ª‚¢‚½‚ç
