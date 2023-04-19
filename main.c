@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include <doslib.h>
 #include <iocslib.h>
 #include "CF_MACRO.h"
@@ -37,7 +38,9 @@ BOOL load_gamebg_data(void);
 /* main */
 int main(int argc, char *argv[])
 {
-	allmem();				// mallocの初期化
+	allmem();						// mallocの初期化
+	srand((unsigned)time(NULL));	// 乱数の初期化
+
 	super_begin();			// スーパーバイザーモードへ
 
 	screen_init();			// 画面初期化

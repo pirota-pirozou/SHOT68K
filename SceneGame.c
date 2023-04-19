@@ -105,6 +105,22 @@ void Game_Init(void)
  */
 }
 
+/// @brief 敵の弾を発射する
+/// @param  無し
+static void EBullet_Make(void)
+{
+    pSObj pObj, pEBullet;
+    // 敵の弾を発射
+    int col = rand() % ENEMY_SETUP_COL;
+    pObj = enemy_atack_tbl[col];
+    if (pObj == NULL) return;               // 敵が存在しなければリターン
+
+    // 敵弾を生成
+//    printf("EBullet_Make: x=%d, y=%d\n",pObj->x, pObj->y+8);
+    pEBullet = ObjManager_Make(OBJ_ID_EBULLET, pObj->x, pObj->y+8);
+}
+
+
 // ゲームシーン　更新
 void Game_Update(void)
 {
@@ -184,10 +200,19 @@ void Game_Update(void)
 //        CM_bg_puts(strtmp, 0, 1, 1);
         if (next_idx >= 0)
         {
+            // 乱数で敵のショットを発射
+            if ((rand() % 256) < 5)
+            {
+                // 5%の確率で敵弾を発射
+                EBullet_Make();
+
+            }
+
             // 次のキャラがいたら
             if (next_idx <= enemy_move_idx)
             {
                 // 全てのキャラが動き終わったら
+
                 // 動作反転チェック
                 if (enemy_touch_wall & 0x01)
                 {
@@ -472,7 +497,7 @@ void ObjFunc_PBullet(pSObj pObj)
 /// @return なし
 void ObjFunc_EBullet(pSObj pObj)
 {
-    pObj->y += 4;           // 下に移動
+    pObj->y += 1;           // 下に移動
     if (pObj->y >= 248)
     {
         // 画面外に出たら消滅
@@ -646,12 +671,6 @@ static void to_next_stage(void)
 //////////////////////////////////////
 static void initStage(void)
 {
-    // オブジェクトの全消去
-//     obj_clear_all();
-
-    // 新たにプレイヤーの生成
-//    pObjPlayer = ObjManager_Make(OBJ_ID_PLAYER, 128, 256-16);
-
     // 敵の初期配置
     setupEnemies();
 
