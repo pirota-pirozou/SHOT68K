@@ -7,10 +7,15 @@
 #include "ObjManager.h"
 #include "BMPLoad256.h"
 
-#define PAUSE_X 13
-#define PAUSE_Y 15
+#define PAUSE_X 13                      // ポーズの表示位置Ｘ
+#define PAUSE_Y 15                      // ポーズの表示位置Ｙ
 
-#define DEADLINE_Y  232             // 敵の侵略位置
+#define DEADLINE_Y  232                 // 敵の侵略位置
+
+#define ENEMY_SETUP_COL   11            // 敵の初期配置列数
+#define ENEMY_SETUP_ROW   5             // 敵の初期配置行数
+
+
 
 #define BGDRAW_FLG_SCORE 0x0001    // スコアの書き換えフラグ
 #define BGDRAW_FLG_HISCORE 0x0002  // ハイスコアの書き換えフラグ
@@ -47,6 +52,8 @@ static int enemy_move_idx;      // 敵の動作インデックス
 static uint16 enemy_touch_wall; // 敵が壁に触れたフラグ
 static int stage;               // ステージ
 static int player_left;         // 残機
+
+static pSObj enemy_atack_tbl[ENEMY_SETUP_COL]; // 攻撃する敵Objが入っているテーブル
 
 // プロトタイプ宣言
 static void SetPause(BOOL);
@@ -172,9 +179,9 @@ void Game_Update(void)
         // 次のキャラへ
         int next_idx = ObjManager_FindEnemyNextIdx(enemy_move_idx);
         // デバッグ表示
-        char strtmp[128];
-        sprintf(strtmp, "NEXT_IDX=%3d", next_idx);
-        CM_bg_puts(strtmp, 0, 1, 1);
+//        char strtmp[128];
+//        sprintf(strtmp, "NEXT_IDX=%3d", next_idx);
+//        CM_bg_puts(strtmp, 0, 1, 1);
         if (next_idx >= 0)
         {
             // 次のキャラがいたら
@@ -337,6 +344,37 @@ void ObjFunc_Player(pSObj pObj)
 }
 
 /////////////////////////////////
+/// @brief 攻撃した列の最下行の敵を探す
+/////////////////////////////////
+/// @brief 攻撃した列の最下行の敵を探す
+/// @param row 攻撃した行
+/// @param col 攻撃した列
+static pSObj SearchNextAttackEnemy(int row, int col)
+{
+    pSObj pObj = NULL;
+    int _row = -1;
+    for (int i = 0; i < OBJ_MAX; i++)
+    {
+        pSObj pObjEnemy = ObjManager_GetObj(i);
+        if (pObjEnemy->id >= OBJ_ID_ENEMY1 &&
+            pObjEnemy->id <= OBJ_ID_ENEMY3)
+        {
+            if (pObjEnemy->col == col)
+            {
+                if (pObjEnemy->row > _row)
+                {
+                    // 一番下の敵を見つけた
+                    pObj = pObjEnemy;
+                    _row = pObjEnemy->row;
+                }
+            }
+        }
+    }
+    return pObj;
+}
+
+
+/////////////////////////////////
 /// 自機弾の更新処理
 /////////////////////////////////
 /// @brief 自機弾の更新処理
@@ -376,19 +414,42 @@ void ObjFunc_PBullet(pSObj pObj)
                 switch (pObjEnemy->id)
                 {
                 case OBJ_ID_ENEMY1:
-                    pts = 100;
+                    pts = 10;
                     break;
                 case OBJ_ID_ENEMY2:
-                    pts = 200;
+                    pts = 20;
                     break;
                 case OBJ_ID_ENEMY3:
-                    pts = 300;
+                    pts = 30;
                     break;
                 default:
                     // ここには来ないはず
                     __UNREACHABLE__;
                 }
+                // 消滅させる敵が攻撃する敵だったら？
+                int col = pObjEnemy->col;
+                int row = pObjEnemy->row;
                 ObjManager_Destroy(pObjEnemy);  // 敵を消滅
+                if (enemy_atack_tbl[col] == pObjEnemy)
+                {
+                    // 攻撃する敵を消滅させたら、
+                    pSObj pObjTmp = SearchNextAttackEnemy(row, col);
+                    // 同じ列の次の敵を攻撃する敵にする
+                    enemy_atack_tbl[col] = pObjTmp;
+                    if (pObjTmp != NULL)
+                    {
+                        // 攻撃する敵がいたら、弾を発射
+                        char strtmp[128];
+                        sprintf(strtmp, "NEXT_ATK=%2d %2d", pObjTmp->col, pObjTmp->row);
+                        CM_bg_puts(strtmp, 0, 1, 1);
+                    }
+                    else
+                    {
+                        CM_bg_puts("NEXT_ATK=NONE   ", 0, 1, 1);
+                    }
+                }
+
+                //
                 addScore(pts);                  // スコア加算
                 enemy_left--;                   // 敵の残数を減らす
                 if (enemy_left <= 0)
@@ -507,7 +568,7 @@ static void setupEnemies(void)
 {
     // 敵の初期配置
     enemy_left = 0;
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < ENEMY_SETUP_ROW; i++)
     {
         uint16 _id;
         switch (i)
@@ -526,7 +587,7 @@ static void setupEnemies(void)
         default:
             __UNREACHABLE__;
         }
-        for (int j = 0; j < 11; j++)
+        for (int j = 0; j < ENEMY_SETUP_COL; j++)
         {
             int16 _x = (j * 20) + 24;
             int16 _y = (i * 24) + 24;
@@ -535,6 +596,12 @@ static void setupEnemies(void)
             pObj->row = i;      // 敵の行番号
             pObj->col = j;      // 敵の列番号
             pObj->stat = 0;     // 敵の状態
+
+            if (i == (ENEMY_SETUP_ROW-1))
+            {
+                // 最下段の敵のみ弾発射
+                enemy_atack_tbl[j] = pObj;
+            }
 
             enemy_left++;
         }
