@@ -159,7 +159,7 @@ BOOL load_pat_data(void)
 	do
 	{
 		px2buf = (pPX2FILE)malloc(sizeof(PX2FILE));
-		if (px2buf < 0)
+		if (px2buf == NULL)
 		{
 			printf("px2buf: ƒƒ‚ƒŠ‚ªŠm•Û‚Å‚«‚Ü‚¹‚ñB\n");
 			result = FALSE;
