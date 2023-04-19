@@ -39,7 +39,8 @@ static int enemy_left;          // 敵の残り数
 enum
 {
     STATUS_NORMAL,              // （通常）ゲーム中
-    STATUS_MISS,                // ミス
+    STATUS_INVASION,            // 侵略
+    STATUS_MISS,                // ミス（自機やられ）
     STATUS_CLEAR,               // ステージクリア
     STATUS_GAMEOVER,            // ゲームオーバー
     STATUS_MAX                  // 状態の最大値
@@ -61,8 +62,11 @@ static void addScore(int);
 static void setupEnemies(void);
 static void to_next_stage(void);
 static void obj_clear_all(void);
+static void obj_clear_ebullet(void);
 static void initStage(void);
+static void readyPlayer(void);
 static void setGameOver(void);
+static void setPlayerMiss(void);
 static void enemiesMoveDown(int);
 
 // ゲームシーン　初期化
@@ -93,16 +97,8 @@ void Game_Init(void)
     status_count = 0;
 
     // プレイヤーの生成
-    pObjPlayer = ObjManager_Make(OBJ_ID_PLAYER, 128, 256-16);
+    readyPlayer();
     initStage();                // ステージの初期化
-/*
-    // 敵の生成
-    setupEnemies();
-
-    // 敵の動作インデックスを初期化
-    enemy_move_idx = ObjManager_FindEnemyIdx();
-    enemy_touch_wall = 0;       // 敵が壁に触れたフラグをクリア
- */
 }
 
 /// @brief 敵の弾を発射する
@@ -231,13 +227,36 @@ void Game_Update(void)
         }
         enemy_move_idx = next_idx;
         break;
-    case STATUS_MISS:
-        // ミス
+    case STATUS_INVASION:
+        // 侵略
         if ((--status_count) <= 0)
         {
             // 一定フレーム経過したらゲームオーバー
             status = STATUS_GAMEOVER;
             status_count = 60*3;
+        }
+        break;
+    case STATUS_MISS:
+        // 侵略
+        if ((--status_count) <= 0)
+        {
+            // 残機減らす
+            player_left--;
+            bgDraw_flg |= BGDRAW_FLG_LEFT;
+            if (player_left <= 0)
+            {
+                // プレイヤーの残機がなくなった
+                // ゲームオーバー状態へ
+                setGameOver();
+            }
+            else
+            {
+                // 一定フレーム経過したらリトライ
+                status = STATUS_NORMAL;
+                // リトライ処理
+                readyPlayer();      // プレイヤー作成
+                obj_clear_ebullet();    // 敵弾を消す
+            }
         }
         break;
     case STATUS_CLEAR:
@@ -260,13 +279,14 @@ void Game_Update(void)
         // ここには来ない
         __UNREACHABLE__;
     }
-
+/*
     // デバッグ用
     if (pad_trg & PAD_A)
     {
         // Aボタンでタイトルシーンへ遷移
         SceneManager_ChangeScene(SCENE_ID_TITLE);
     }
+ */
 }
 
 // ゲームシーン　描画
@@ -356,9 +376,9 @@ void ObjFunc_Player(pSObj pObj)
     pObj->x = clamp(pObj->x+vx, 8, 256-16-8);
 
     // 弾発射判定
-    if (pad_trg & PAD_B)
+    if (pad_trg & (PAD_B | PAD_A) )
     {
-        // Bボタンで弾発射
+        // A,Bボタンで弾発射
         if (pObjBullet == NULL)
         {
             pObjBullet = ObjManager_Make(OBJ_ID_PBULLET,
@@ -461,9 +481,10 @@ void ObjFunc_PBullet(pSObj pObj)
                     pSObj pObjTmp = SearchNextAttackEnemy(row, col);
                     // 同じ列の次の敵を攻撃する敵にする
                     enemy_atack_tbl[col] = pObjTmp;
+/*
                     if (pObjTmp != NULL)
                     {
-                        // 攻撃する敵がいたら、弾を発射
+                        // 攻撃する敵がいたら、情報更新
                         char strtmp[128];
                         sprintf(strtmp, "NEXT_ATK=%2d %2d", pObjTmp->col, pObjTmp->row);
                         CM_bg_puts(strtmp, 0, 1, 1);
@@ -472,6 +493,7 @@ void ObjFunc_PBullet(pSObj pObj)
                     {
                         CM_bg_puts("NEXT_ATK=NONE   ", 0, 1, 1);
                     }
+ */
                 }
 
                 //
@@ -525,6 +547,8 @@ void ObjFunc_EBullet(pSObj pObj)
         ObjManager_Destroy(pObj);      // 敵弾を消滅
         ObjManager_Destroy(pObjPlayer); // プレイヤーを消滅
         pObjPlayer = NULL;             // プレイヤーフラグもクリア
+        // プレイヤーミス処理へ
+        setPlayerMiss();
     }
 }
 
@@ -683,6 +707,14 @@ static void initStage(void)
 }
 
 //////////////////////////////////////
+/// @brief プレイヤーの初期化
+//////////////////////////////////////
+static void readyPlayer(void)
+{
+    pObjPlayer = ObjManager_Make(OBJ_ID_PLAYER, 128, 256-16);
+}
+
+//////////////////////////////////////
 /// @brief オブジェクトの全消去
 //////////////////////////////////////
 static void obj_clear_all(void)
@@ -698,6 +730,23 @@ static void obj_clear_all(void)
 }
 
 //////////////////////////////////////
+/// @brief 敵の弾の全消去
+//////////////////////////////////////
+static void obj_clear_ebullet(void)
+{
+    for (int i = 0; i < OBJ_MAX; i++)
+    {
+        pSObj pObj = ObjManager_GetObj(i);
+        if (pObj->id == OBJ_ID_EBULLET)
+        {
+            ObjManager_Destroy(pObj);
+        }
+    }
+
+}
+
+
+//////////////////////////////////////
 /// @brief ゲームオーバー状態へ
 //////////////////////////////////////
 static void setGameOver(void)
@@ -707,4 +756,14 @@ static void setGameOver(void)
     status = STATUS_GAMEOVER;
     player_left = 0;
     bgDraw_flg |= (BGDRAW_FLG_GAMEOVER | BGDRAW_FLG_LEFT);
+}
+
+//////////////////////////////////////
+/// @brief プレイヤーがミスした
+//////////////////////////////////////
+static void setPlayerMiss(void)
+{
+    // ミス状態へ
+    status_count = 180;
+    status = STATUS_MISS;
 }
