@@ -35,6 +35,7 @@ BOOL load_pat_data(void);
 BOOL load_title_data(void);
 BOOL load_gamebg_data(void);
 
+/// @brief メイン関数
 /* main */
 int main(int argc, char *argv[])
 {
@@ -71,7 +72,6 @@ int main(int argc, char *argv[])
 	}
 
 //	printf("画面が切り替わりました。\n");
-
 //	INKEY();				// キー入力待ち
 
 	CM_sprite_on();			// スプライト表示管理ＯＮ
@@ -145,10 +145,10 @@ FORCE_QUIT:
 	return 0;
 }
 
-// データの読み込み
-// スプライトパターンとパレットデータを読み込み定義する
-// 引数: なし
-// Return: TRUE:成功 FALSE:失敗
+/// @brief スプライトパターン・パレットデータの読み込み
+/// スプライトパターンとパレットデータを読み込み定義する
+/// 引数: なし
+/// @retval TRUE:成功 FALSE:失敗
 BOOL load_pat_data(void)
 {
 	FILE *fp = NULL;
@@ -201,10 +201,11 @@ BOOL load_pat_data(void)
 	return result;
 }
 
-// ゲーム背景のBMPを読み込む
-// 引数: なし
-// Return: TRUE:成功 FALSE:失敗
-BOOL load_gamebg_data(void)
+/// @brief BMPファイルを読み込む
+/// @param filename ファイル名
+/// @param bmpdata 読み込んだBMPデータへのポインタ
+/// @retval TRUE:成功 FALSE:失敗
+BOOL load_bmp_data(char* filename, pBMPFILE256* bmp_data)
 {
 	FILE *fp = NULL;
 	pBMPFILE256 pBMP = NULL;
@@ -213,17 +214,25 @@ BOOL load_gamebg_data(void)
 	// BMPファイルの読み込み
 	do
 	{
-		pBMP = LoadBMP256("space.bmp");
+		pBMP = LoadBMP256(filename);
 		if (pBMP == NULL)
 		{
 			printf("pBMP: メモリが確保できません。\n");
 			result = FALSE;
 			break;
 		}
-		pBmpBackGround = pBMP;
+		*bmp_data = pBMP;
 	} while (0);
 
 	return result;
+}
+
+// ゲーム背景のBMPを読み込む
+// 引数: なし
+// Return: TRUE:成功 FALSE:失敗
+BOOL load_gamebg_data(void)
+{
+	return load_bmp_data("space.bmp", &pBmpBackGround);
 }
 
 // タイトル画面のBMPを読み込む
@@ -231,22 +240,5 @@ BOOL load_gamebg_data(void)
 // Return: TRUE:成功 FALSE:失敗
 BOOL load_title_data(void)
 {
-	FILE *fp = NULL;
-	pBMPFILE256 pBMP = NULL;
-	BOOL result = TRUE;
-
-	// BMPファイルの読み込み
-	do
-	{
-		pBMP = LoadBMP256("title.bmp");
-		if (pBMP == NULL)
-		{
-			printf("pBMP: メモリが確保できません。\n");
-			result = FALSE;
-			break;
-		}
-		pBmpBackTitle = pBMP;
-	} while (0);
-
-	return result;
+	return load_bmp_data("title.bmp", &pBmpBackTitle);
 }

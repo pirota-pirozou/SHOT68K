@@ -16,7 +16,7 @@ static int nextSceneID = -1;
 static const SSceneWork * scenes = NULL;
 
 /////////////////////////////////
-// シーンマネージャー自体の初期化
+/// @brief シーンマネージャー自体の初期化
 /////////////////////////////////
 void SceneManager_Init()
 {
@@ -31,7 +31,7 @@ void SceneManager_Init()
 }
 
 /////////////////////////////////
-// シーンIDの関数に切り替える
+/// @brief シーンIDの関数に切り替える
 /////////////////////////////////
 static void SetChangeFunc(int sid)
 {
@@ -45,7 +45,7 @@ static void SetChangeFunc(int sid)
 }
 
 /////////////////////////////////
-// シーンマネージャー：シーン切替
+/// @brief シーンマネージャー：シーン切替
 /////////////////////////////////
 void SceneManager_ChangeScene(int nextscene)
 {
@@ -72,7 +72,7 @@ void SceneManager_ChangeScene(int nextscene)
 }
 
 /////////////////////////////////
-// シーンマネージャー：シーン登録
+/// @brief シーンマネージャー：シーン登録
 /////////////////////////////////
 void SceneManager_Regist(const SSceneWork* scene)
 {
@@ -80,7 +80,7 @@ void SceneManager_Regist(const SSceneWork* scene)
 }
 
 /////////////////////////////////
-// シーン：初期化
+/// @brief  シーン：初期化
 /////////////////////////////////
 void Scene_Init()
 {
@@ -91,7 +91,7 @@ void Scene_Init()
 }
 
 /////////////////////////////////
-// シーン：更新処理
+/// @brief シーン：更新処理
 /////////////////////////////////
 void Scene_Update()
 {
@@ -102,7 +102,7 @@ void Scene_Update()
 }
 
 /////////////////////////////////
-// シーン：描画処理
+/// @brief シーン：描画処理
 /////////////////////////////////
 void Scene_Draw()
 {
@@ -127,7 +127,7 @@ void Scene_Draw()
 }
 
 /////////////////////////////////
-// シーン：切替処理
+/// @brief シーン：切替処理
 /////////////////////////////////
 void Scene_Clear()
 {
@@ -138,7 +138,7 @@ void Scene_Clear()
 }
 
 /////////////////////////////////
-// シーン：VSync処理
+/// @brief シーン：VSync処理
 /////////////////////////////////
 void Scene_VSync()
 {

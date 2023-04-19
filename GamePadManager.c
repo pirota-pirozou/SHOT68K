@@ -7,18 +7,18 @@
 
 #include "GamePadManager.h"
 
-// ゲームパッドの値
+/// @brief ゲームパッドの値
 uint16 pad;
 uint16 pad_trg;
 static uint16 pad_bak;
 
-// ゲームパッドマネージャー　初期化
+/// @brief ゲームパッドマネージャー　初期化
 void GamePadManager_Init(void)
 {
     pad = pad_bak = pad_trg = 0;
 }
 
-// ゲームパッドマネージャー　更新
+/// @brief ゲームパッドマネージャー　更新
 void GamePadManager_Update(void)
 {
     // ゲームパッドの値を取得

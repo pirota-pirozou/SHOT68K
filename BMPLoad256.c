@@ -17,13 +17,13 @@
 //#define dos_malloc(siz)    	MALLOC((siz))
 //#define dos_free(ptr)   	MFREE((int)(ptr))
 
-// word値のエンディアンをスワップします
+/// @brief word値のエンディアンをスワップします
 static inline WORD_t swap_endian_word(WORD_t value)
  {
     return (value << 8) | (value >> 8);
 }
 
-// dword値のエンディアンをスワップします
+/// @brief dword値のエンディアンをスワップします
 static inline DWORD_t swap_endian_dword(DWORD_t value)
  {
     return (value << 24) |
@@ -122,7 +122,6 @@ static void setPalette(WORD_t *grppal, RGBQUAD *pal)
 		grppal[i] = col;
 	}
 }
-
 
 /// @brief メモリ上のBMP256色画像の表示
 /// @param pBMP 画像データのポインタ

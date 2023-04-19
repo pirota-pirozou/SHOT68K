@@ -13,7 +13,7 @@ extern int hiscore;                // ハイスコア
 
 static int cou;                    // カウンタ
 
-// タイトルシーン　初期化
+/// @brief タイトルシーン　初期化
 void Title_Init(void)
 {
     char strtmp[128];
@@ -37,7 +37,7 @@ void Title_Init(void)
     cou = 0;
 }
 
-// タイトルシーン　更新
+/// @brief タイトルシーン　更新
 void Title_Update(void)
 {
     // ゲームパッドの値を取得
@@ -55,7 +55,7 @@ void Title_Update(void)
     cou++;
 }
 
-// タイトルシーン　描画
+/// @brief タイトルシーン　描画
 void Title_Draw(void)
 {
 //    CM_bg_puts("TITLE_DRAW()", 0, 2, 1);
@@ -69,7 +69,7 @@ void Title_Draw(void)
 
 }
 
-// タイトルシーン　VSync
+/// @brief タイトルシーン　VSync
 void Title_VSync(void)
 {
     if ((cou & 32)==0)
@@ -83,7 +83,7 @@ void Title_VSync(void)
 
 }
 
-// タイトルシーン　クリア（終了）
+// @brief タイトルシーン　クリア（終了）
 void Title_Clear(void)
 {
 //    printf("**Title_Clear()\n");

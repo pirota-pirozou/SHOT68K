@@ -15,46 +15,45 @@
 #define ENEMY_SETUP_COL   11            // 敵の初期配置列数
 #define ENEMY_SETUP_ROW   5             // 敵の初期配置行数
 
-
-
-#define BGDRAW_FLG_SCORE 0x0001    // スコアの書き換えフラグ
-#define BGDRAW_FLG_HISCORE 0x0002  // ハイスコアの書き換えフラグ
-#define BGDRAW_FLG_LEFT 0x0004  // 残機の書き換えフラグ
-#define BGDRAW_FLG_STAGE 0x0008  // ステージの書き換えフラグ
-#define BGDRAW_FLG_GAMEOVER 0x0010  // ゲームオーバー書き換えフラグ
+#define BGDRAW_FLG_SCORE 0x0001         // スコアの書き換えフラグ
+#define BGDRAW_FLG_HISCORE 0x0002       // ハイスコアの書き換えフラグ
+#define BGDRAW_FLG_LEFT 0x0004          // 残機の書き換えフラグ
+#define BGDRAW_FLG_STAGE 0x0008         // ステージの書き換えフラグ
+#define BGDRAW_FLG_GAMEOVER 0x0010      // ゲームオーバー書き換えフラグ
 
 extern pBMPFILE256 pBmpBackGround;	    // BMPファイルデータ（ゲーム背景）
 
-int score = 0;                  // スコア
-int hiscore = 0;                // ハイスコア
+int score = 0;                          // スコア
+int hiscore = 0;                        // ハイスコア
 
-static BOOL bPause = FALSE;     // ポーズフラグ
-static uint32 bgDraw_flg;       // BG書き換えフラグ
-static pSObj pObjPlayer;        // プレイヤーのオブジェクト
-static pSObj pObjBullet;        // プレイヤーの弾のオブジェクト
+static BOOL bPause = FALSE;             // ポーズフラグ
+static uint32 bgDraw_flg;               // BG書き換えフラグ
+static pSObj pObjPlayer;                // プレイヤーのオブジェクト
+static pSObj pObjBullet;                // プレイヤーの弾のオブジェクト
 
-static int enemy_left;          // 敵の残り数
+static int enemy_left;                  // 敵の残り数
 
 // ゲーム状態の管理用
 enum
 {
-    STATUS_NORMAL,              // （通常）ゲーム中
-    STATUS_INVASION,            // 侵略
-    STATUS_MISS,                // ミス（自機やられ）
-    STATUS_CLEAR,               // ステージクリア
-    STATUS_GAMEOVER,            // ゲームオーバー
-    STATUS_MAX                  // 状態の最大値
+    STATUS_NORMAL,                      // （通常）ゲーム中
+    STATUS_INVASION,                    // 侵略
+    STATUS_MISS,                        // ミス（自機やられ）
+    STATUS_CLEAR,                       // ステージクリア
+    STATUS_GAMEOVER,                    // ゲームオーバー
+    STATUS_MAX                          // 状態の最大値
 };
-static int status;              // ゲーム状態
-static int status_count;        // 状態遷移カウンタ
+static int status;                      // ゲーム状態
+static int status_count;                // 状態遷移カウンタ
 
 // 敵の動作　管理用
-static int enemy_move_idx;      // 敵の動作インデックス
-static uint16 enemy_touch_wall; // 敵が壁に触れたフラグ
-static int stage;               // ステージ
-static int player_left;         // 残機
+static int enemy_move_idx;              // 敵の動作インデックス
+static uint16 enemy_touch_wall;         // 敵が壁に触れたフラグ
+static int stage;                       // ステージ
+static int player_left;                 // 残機
 
-static pSObj enemy_atack_tbl[ENEMY_SETUP_COL]; // 攻撃する敵Objが入っているテーブル
+// 攻撃する敵Objが入っているテーブル
+static pSObj enemy_atack_tbl[ENEMY_SETUP_COL];
 
 // プロトタイプ宣言
 static void SetPause(BOOL);
@@ -69,7 +68,7 @@ static void setGameOver(void);
 static void setPlayerMiss(void);
 static void enemiesMoveDown(int);
 
-// ゲームシーン　初期化
+/// @brief ゲームシーン　初期化
 void Game_Init(void)
 {
     OBJManager_Init();          // オブジェクトマネージャーの初期化
@@ -102,7 +101,6 @@ void Game_Init(void)
 }
 
 /// @brief 敵の弾を発射する
-/// @param  無し
 static void EBullet_Make(void)
 {
     pSObj pObj, pEBullet;
@@ -116,8 +114,7 @@ static void EBullet_Make(void)
     pEBullet = ObjManager_Make(OBJ_ID_EBULLET, pObj->x, pObj->y+8);
 }
 
-
-// ゲームシーン　更新
+/// @brief ゲームシーン　更新
 void Game_Update(void)
 {
     // ゲームパッドの値を取得
@@ -289,13 +286,13 @@ void Game_Update(void)
  */
 }
 
-// ゲームシーン　描画
+/// @brief ゲームシーン　描画
 void Game_Draw(void)
 {
     ObjManager_Draw();      // オブジェクトマネージャーの描画
 }
 
-// ゲームシーン　VSync
+/// @brief ゲームシーン　VSync
 void Game_VSync(void)
 {
     char strtmp[128];
@@ -335,11 +332,9 @@ void Game_VSync(void)
         CM_bg_puts("GAME OVER", 11, 16, 1);
         bgDraw_flg &= ~BGDRAW_FLG_GAMEOVER;
     }
-
-//    CM_bg_puts("GAME_VSYNC()", 0, 3, 1);
 }
 
-// ゲームシーン　クリア（終了）
+/// @brief ゲームシーン　クリア（終了）
 void Game_Clear(void)
 {
     ObjManager_End();       // オブジェクトマネージャーの終了
@@ -350,8 +345,8 @@ void Game_Clear(void)
 /////////////////////////////////
 // プレイヤーの更新処理
 /////////////////////////////////
-// @brief プレイヤーの更新処理
-// @param pObj プレイヤーのオブジェクト
+/// @brief プレイヤーの更新処理
+/// @param pObj プレイヤーのオブジェクト
 void ObjFunc_Player(pSObj pObj)
 {
     // ゲームパッドの値を取得
@@ -391,7 +386,6 @@ void ObjFunc_Player(pSObj pObj)
 /////////////////////////////////
 /// @brief 攻撃した列の最下行の敵を探す
 /////////////////////////////////
-/// @brief 攻撃した列の最下行の敵を探す
 /// @param row 攻撃した行
 /// @param col 攻撃した列
 static pSObj SearchNextAttackEnemy(int row, int col)
@@ -420,11 +414,9 @@ static pSObj SearchNextAttackEnemy(int row, int col)
 
 
 /////////////////////////////////
-/// 自機弾の更新処理
-/////////////////////////////////
 /// @brief 自機弾の更新処理
+/////////////////////////////////
 /// @param pObj 自機弾のオブジェクト
-/// @return なし
 void ObjFunc_PBullet(pSObj pObj)
 {
     pObj->y -= 8;
@@ -516,7 +508,6 @@ void ObjFunc_PBullet(pSObj pObj)
 /// @brief 敵弾の更新処理
 /////////////////////////////////
 /// @param pObj 敵弾のオブジェクト
-/// @return なし
 void ObjFunc_EBullet(pSObj pObj)
 {
     pObj->y += 1;           // 下に移動
@@ -554,11 +545,9 @@ void ObjFunc_EBullet(pSObj pObj)
 
 
 /////////////////////////////////
-/// 敵爆発エフェクトの更新処理
-/////////////////////////////////
 /// @brief 敵爆発エフェクトの更新処理
+/////////////////////////////////
 /// @param pObj 敵爆発エフェクトのオブジェクト
-/// @return なし
 void ObjFunc_EEffect(pSObj pObj)
 {
     // アニメーション処理
@@ -578,7 +567,6 @@ void ObjFunc_EEffect(pSObj pObj)
 //////////////////////////////////////
 /// @brief ポーズフラグの設定
 /// @param[in] flg ポーズフラグ
-/// @return なし
 //////////////////////////////////////
 static void SetPause(BOOL flg)
 {
@@ -596,7 +584,6 @@ static void SetPause(BOOL flg)
 //////////////////////////////////////
 // スコアの加算
 /// @param[in] pts 加算するスコア
-/// @return なし
 //////////////////////////////////////
 static void addScore(int pts)
 {
@@ -742,9 +729,7 @@ static void obj_clear_ebullet(void)
             ObjManager_Destroy(pObj);
         }
     }
-
 }
-
 
 //////////////////////////////////////
 /// @brief ゲームオーバー状態へ
