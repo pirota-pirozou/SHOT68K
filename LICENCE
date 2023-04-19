@@ -1,1 +1,21 @@
-(C) 2023
+SHOT68K.X For X68000 Version 0.1
+ Written by Pirota Pirozou 2023/04/19
+
+--- JP
+これらのソースコードは、自由に改変して自分のプログラムに組み込むことが可能である。
+著作権表記も必要ない。
+ただし、このコードを使用したことによるいかなる損害についても、作者は一切の責任を負わない。
+
+（画像データなどソースコード以外のデータは除く）
+
+--- EN
+These source codes can be freely modified and incorporated into your own programs.
+No copyright notice is required.
+However, the author assumes no responsibility for any damages resulting from the use of this code.
+
+(except for data other than the source code, such as image data)
+
+--- STAFF ---
+Programmer: Pirota Pirozou
+Sprite Graphics: Siozo34
+Title/BG Graphics: Bing Image Creator
