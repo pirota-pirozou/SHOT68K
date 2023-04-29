@@ -617,7 +617,13 @@ static void addScore(int pts)
 static void setupEnemies(void)
 {
     // 敵の初期配置
-    enemy_left = 0;
+    enemy_left = 0;             // 敵の残り数
+    int sy = 24;
+
+    sy += ((stage-1) * 8);      // ステージによって初期Y位置を変える
+//    sy = 112;
+    if (sy > 112) sy = 112;     // 下限を設ける
+
     for (int i = 0; i < ENEMY_SETUP_ROW; i++)
     {
         uint16 _id;
@@ -640,7 +646,7 @@ static void setupEnemies(void)
         for (int j = 0; j < ENEMY_SETUP_COL; j++)
         {
             int16 _x = (j * 20) + 24;
-            int16 _y = (i * 24) + 24;
+            int16 _y = (i * 24) + sy;
 
             pSObj pObj = ObjManager_Make(_id, _x, _y);
             pObj->row = i;      // 敵の行番号
