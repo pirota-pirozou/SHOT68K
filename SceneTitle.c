@@ -34,6 +34,8 @@ void Title_Init(void)
     CM_bg_puts("<SAMPLE GAME:SHOT68K>", 4,  6, 1);
     CM_bg_puts("PROGRAMMED BY PIROTA.", 4, 29, 1);
 
+    CM_bg_puts("VER 1.01", 23, 31, 1);
+
     cou = 0;
 }
 

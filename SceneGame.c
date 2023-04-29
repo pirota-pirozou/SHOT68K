@@ -125,8 +125,13 @@ static void EBullet_Make(void)
     if (pObj == NULL) return;               // 敵が存在しなければリターン
 
     // 敵弾を生成
-//    printf("EBullet_Make: x=%d, y=%d\n",pObj->x, pObj->y+8);
     pEBullet = ObjManager_Make(OBJ_ID_EBULLET, pObj->x, pObj->y+8);
+    // 敵弾の速度を設定
+    int vy = 1;
+    if (stage >= 4) { vy = 2; }     // ステージ4以降は速度アップ
+    pEBullet->vx = 0;
+    pEBullet->vy = vy;
+
 }
 
 /// @brief ゲームシーン　更新
@@ -392,6 +397,8 @@ void ObjFunc_Player(pSObj pObj)
         {
             pObjBullet = ObjManager_Make(OBJ_ID_PBULLET,
                 pObj->x, pObj->y-2);
+            pObjBullet->vx = 0;
+            pObjBullet->vy = -8;
         }
     }
 
@@ -433,8 +440,8 @@ static pSObj SearchNextAttackEnemy(int row, int col)
 /// @param pObj 自機弾のオブジェクト
 void ObjFunc_PBullet(pSObj pObj)
 {
-    pObj->y -= 8;
-    if (pObj->y <= 0)
+    pObj->y += pObj->vy;
+    if (pObj->y < 0)
     {
         // 画面外に出たら消滅
         ObjManager_Destroy(pObj);
@@ -524,7 +531,7 @@ void ObjFunc_PBullet(pSObj pObj)
 /// @param pObj 敵弾のオブジェクト
 void ObjFunc_EBullet(pSObj pObj)
 {
-    pObj->y += 1;           // 下に移動
+    pObj->y += pObj->vy;            // 下に移動
     if (pObj->y >= 248)
     {
         // 画面外に出たら消滅
