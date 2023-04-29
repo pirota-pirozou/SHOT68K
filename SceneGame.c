@@ -51,6 +51,7 @@ static int enemy_move_idx;              // 敵の動作インデックス
 static uint16 enemy_touch_wall;         // 敵が壁に触れたフラグ
 static int stage;                       // ステージ
 static int player_left;                 // 残機
+static int firingRate;                  // 敵弾の発射確率 n/256
 
 // 攻撃する敵Objが入っているテーブル
 static pSObj enemy_atack_tbl[ENEMY_SETUP_COL];
@@ -214,9 +215,9 @@ void Game_Update(void)
         if (next_idx >= 0)
         {
             // 乱数で敵のショットを発射
-            if ((rand() % 256) < 5)
+            if ((rand() % 256) < firingRate)
             {
-                // 5/256の確率で敵弾を発射
+                // firingRate/256の確率で敵弾を発射
                 EBullet_Make();
             }
 
@@ -715,6 +716,12 @@ static void initStage(void)
     // 敵の動作インデックスを初期化
     enemy_move_idx = ObjManager_FindEnemyIdx();
     enemy_touch_wall = 0;       // 敵が壁に触れたフラグをクリア
+
+    // 敵弾の確率を設定
+    firingRate = 5 + ((stage-1) * 1);
+//    firingRate = 20;            // デバッグ用
+    // 上限を設ける
+    if (firingRate > 20) firingRate = 20;
 
     // ゲーム状態の初期化
     status = STATUS_NORMAL;
