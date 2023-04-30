@@ -14,9 +14,9 @@
 * The copyright of any program that uses this library belongs to the author of the program,
 * the authors of the programs that use this library.
 
-	.include IOCSCALL.MAC
-	.include DOSCALL.MAC
-	.include LABEL.H
+	.include iocscall.mac
+	.include doscall.mac
+	.include label.h
 
 	* ＰＵＳＨマクロ *		ex)push a3-d6
 push:	macro	Param
@@ -28,13 +28,11 @@ pop:	macro	Param
 	movem.l	(sp)+,Param
 	endm
 
-COPYKILL	equ	1		* ＣＯＰＹキー処理　無効フラグ
-
 	.xref	_PRG_QUIT
 
-	.xdef	_super_begin
-	.xdef	_super_end
+	.xdef	_setup_vector
 	.xdef	_screen_init
+	.xdef	_screen_restore
 	.xdef 	_gcls
 	.xdef	_gamepad
 	.xdef	_TX_CLS
@@ -48,17 +46,15 @@ nmibuf:
 	ds.l	1			* 例外処理・元の飛び先
 abort_vec:
 	ds.l	1			* アボート・ベクタ　元の飛び先
-uspbuf:
-	ds.l	1			* ｕｓｐ退避用
 
 	.text
 	.even
 
 	***************************
-	* スーパーバイザー・モードへ
+	* 各種ベクタのセットアップ
 	***************************
-	* void super_begin(void);
-_super_begin:
+	* void setup_vector(void);
+_setup_vector:
 regs	reg	d3-d7/a3-a5
 	movem.l regs,-(sp)
 *	-------------------
@@ -66,19 +62,17 @@ regs	reg	d3-d7/a3-a5
 	IOCS	_B_LPEEK
 
 *	cmpi.l	#$00FF0000,d0
-	bra.s	@f
-*	bcs	@f		* 飛び先がＲＯＭでない
+*	bcs	@f			* 飛び先がＲＯＭでない
 
 	*** ミュージックドライバが登録されてない ****
 *	pea	mdrverr
 *	DOS	_PRINT
 *	addq.l	#4,sp
 
-	move.w	#1,-(sp)
-	DOS	_EXIT2
+*	move.w	#1,-(sp)
+*	DOS	_EXIT2
 *	===================
 @@:
- 	ifne	COPYKILL
 	pea	dumint			* ＣＯＰＹ＝ＫＩＬＬ
 	move.w	#$2C,-(sp)
 	DOS	_INTVCS
@@ -89,7 +83,6 @@ regs	reg	d3-d7/a3-a5
 	lea.l	12(sp),sp
 
 	move.l	d0,nmibuf
-	endif
 *	===================
 	pea	dumint			* ＢＲＥＡＫ＝ＫＩＬＬ
 	move.w	#$2B,-(sp)		* 6
@@ -106,15 +99,6 @@ regs	reg	d3-d7/a3-a5
 	move.l	d0,abort_vec
 
 	lea.l	18(sp),sp
-*	-------------------
-
-	moveq	#0,d1
-	move.l	d1,-(sp)
-	DOS	_SUPER			* スーパーバイザ・モードへ
-	addq.l	#4,sp
-	lea.l	uspbuf,a1
-	move.l	d0,(a1)
-
 *	-------------------
 	movem.l (sp)+,regs
 	rts
@@ -210,23 +194,14 @@ crtmode = %00000_001				* 256Colors
 	rts
 
 	************************
-	* ユーザー・モードへ復帰
+	* DOS画面へ復帰
 	************************
-	* void super_end(void);
-_super_end:
+	* void screen_restore(void);
+_screen_restore:
 regs	reg	d3-d7/a3-a5
 	movem.l regs,-(sp)
+
 	bsr	_TX_CLS
-
-	move.b	#$08,$E8E007		* ＨＲＬをクリア
-
-	* B_SUPER の呼び出しにgcc最適化の都合で失敗する場合、CFLAGS に、-fno-defer-pop をつける
-	* つけない場合は、コメントアウトでユーザ・モードへはOSに任せる
-	lea.l	uspbuf,a1
-	move.l	(a1),-(sp)
-	DOS	_SUPER
-	addq.l	#4,sp
-*	-------------------
 
 	**** 画面初期化 ****
 	moveq	#1,d1

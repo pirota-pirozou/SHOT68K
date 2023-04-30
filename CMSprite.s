@@ -5,11 +5,11 @@
 *
 * このライブラリは、X68000のスプライトを扱うためのライブラリです。
 
-	include	IOCSCALL.MAC
-	include	DOSCALL.MAC
-	include	MACRO.H
-	include	LABEL.H
-	include	DMAADR.H
+	include iocscall.mac
+	include doscall.mac
+	include	macro.h
+	include	label.h
+	include	dmaadr.h
 
         * 内部ワーク
 	.xdef	sprtbl

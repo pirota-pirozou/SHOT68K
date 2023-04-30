@@ -36,8 +36,8 @@ extern "C" {
 //#define PAD_Y   	XM6gでは対応せず
 
 // プロトタイプ宣言
-void super_begin(void);
-void super_end(void);
+void setup_vector(void);
+void screen_restore(void);
 void screen_init(void);
 void vsync(void);
 void gcls(int page);

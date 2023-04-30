@@ -12,25 +12,30 @@ endif
 # デフォルトサフィックスを削除
 .SUFFIXES:
 
+# ビルド対象の CPU
+CPU = 68000
+
 # 各種コマンド短縮名
+ATOMIC = perl ${XDEV68K_DIR}/util/atomic.pl
 CXX = ${XDEV68K_DIR}/m68k-toolchain/bin/m68k-elf-g++
 CC = ${XDEV68K_DIR}/m68k-toolchain/bin/m68k-elf-gcc
-GAS2HAS = perl ${XDEV68K_DIR}/util/x68k_gas2has.pl -cpu 68000 -inc doscall.inc -inc iocscall.inc
-RUN68 = ${XDEV68K_DIR}/run68/run68
+GAS2HAS = perl ${XDEV68K_DIR}/util/x68k_gas2has.pl -cpu $(CPU) -inc doscall.inc -inc iocscall.inc
+RUN68 = $(ATOMIC) ${XDEV68K_DIR}/run68/run68
 HAS = $(RUN68) ${XDEV68K_DIR}/x68k_bin/HAS060.X
 HLK = $(RUN68) ${XDEV68K_DIR}/x68k_bin/hlk301.x
-XDFARC = $(RUN68) ${XDEV68K_DIR}/x68k_bin/XDFARC.X
+XDFARC = $(RUN68) ${XDEV68K_DIR}/x68k_bin/xdfarc.x
 
 # 実行ファイル名
-TARGET_FILE = SHOT68K.X
+EXECUTABLE = SHOT68K.X
+TARGET_FILE = $(EXECUTABLE)
 
 # ヘッダ検索パス
 INCLUDE_FLAGS = -I${XDEV68K_DIR}/include/xc -I${XDEV68K_DIR}/include/xdev68k
 
 
 # コンパイルフラグ
-COMMON_FLAGS = -m68000 -Os $(INCLUDE_FLAGS)
-CFLAGS = $(COMMON_FLAGS) -Wno-builtin-declaration-mismatch -fcall-used-d2 -fcall-used-a2 -fno-defer-pop -finput-charset=cp932 -fexec-charset=cp932 -fverbose-asm
+COMMON_FLAGS = -m$(CPU) -Os $(INCLUDE_FLAGS)
+CFLAGS = $(COMMON_FLAGS) -Wno-builtin-declaration-mismatch -fcall-used-d2 -fcall-used-a2 -finput-charset=cp932 -fexec-charset=cp932 -fverbose-asm
 
 # *.c ソースファイル
 C_SRCS = main.c SceneManager.c GamePadManager.c ObjManager.c \
@@ -85,7 +90,7 @@ $(TARGET_FILE) : $(OBJS)
 #	$(XDFARC) -f ../TEST.XDF $(TARGET_FILE)
 
 # *.c ソースのコンパイル
-$(INTERMEDIATE_DIR)/%.o : %.c makefile
+$(INTERMEDIATE_DIR)/%.o : %.c Makefile
 	mkdir -p $(INTERMEDIATE_DIR)
 	$(CC) -S $(CFLAGS) -o $(INTERMEDIATE_DIR)/$*.m68k-gas.s $<
 	$(GAS2HAS) -i $(INTERMEDIATE_DIR)/$*.m68k-gas.s -o $(INTERMEDIATE_DIR)/$*.s
@@ -93,6 +98,6 @@ $(INTERMEDIATE_DIR)/%.o : %.c makefile
 	$(HAS) -e -u -w0 $(INCLUDE_FLAGS) $(INTERMEDIATE_DIR)/$*.s -o $(INTERMEDIATE_DIR)/$*.o
 
 # *.s ソースのアセンブル
-$(INTERMEDIATE_DIR)/%.o : %.s makefile
+$(INTERMEDIATE_DIR)/%.o : %.s Makefile
 	mkdir -p $(INTERMEDIATE_DIR)
 	$(HAS) -e -u -w0 $(INCLUDE_FLAGS) $*.s -o $(INTERMEDIATE_DIR)/$*.o

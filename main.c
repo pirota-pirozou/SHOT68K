@@ -18,6 +18,7 @@
 #include "SceneGame.h"
 
 //#define PAD_TEST		// コメントを外すとゲームパッドの値表示テスト
+static int usp;			// スーパーバイザーモードのスタックポインタ
 
 // 常駐データ
 pBMPFILE256 pBmpBackGround = NULL;		// BMPファイルデータ（ゲーム背景）
@@ -30,10 +31,25 @@ static const SSceneWork sceneTable[] =
 	{ Game_Init, Game_Update, Game_Draw, Game_VSync, Game_Clear }			// ゲームシーン
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // プロトタイプ宣言
 BOOL load_pat_data(void);
 BOOL load_title_data(void);
 BOOL load_gamebg_data(void);
+void PRG_QUIT(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+/* GCC のコンパイルオプションを退避 */
+#pragma GCC push_options
+
+/* GCC のスタック一括補正を無効化（この後の pragma GCC pop_options で再び有効化される）*/
+#pragma GCC optimize("-fno-defer-pop")
 
 /// @brief メイン関数
 /* main */
@@ -42,12 +58,13 @@ int main(int argc, char *argv[])
 	allmem();						// mallocの初期化
 	srand((unsigned)time(NULL));	// 乱数の初期化
 
-	super_begin();			// スーパーバイザーモードへ
+	usp = B_SUPER(0);				// スーパーバイザーモードのスタックポインタを取得
+//	setup_vector();					// 各種ベクタの設定
 
-	screen_init();			// 画面初期化
+	screen_init();					// 画面初期化
 
-	gcls(0);				// グラフィック画面クリア０
-	gcls(1);				// グラフィック画面クリア１
+	gcls(0);						// グラフィック画面クリア０
+	gcls(1);						// グラフィック画面クリア１
 
 	BOOL bSuccess;
 	bSuccess = load_pat_data();		// パターンデータの読み込み
@@ -119,10 +136,26 @@ int main(int argc, char *argv[])
 	// プログラム終了
 	// プログラムのAbortアドレスを強引にここに設定する
 FORCE_QUIT:
-	asm volatile (".xdef _PRG_QUIT\n_PRG_QUIT:\n");
+	PRG_QUIT();
+	// ここには到達しない
+__UNREACHABLE__;
+	return 0;
+}
+
+///////////////////////////////////
+/// @brief プログラム終了
+///////////////////////////////////
+void PRG_QUIT(void)
+{
 	CM_sprite_off();		// スプライト表示管理ＯＦＦ
 
-	super_end();					// ユーザーモードへ復帰
+	screen_restore();		// DOS画面復帰
+
+	asm volatile("addq.l #4,sp");	// スタック捨てる（行儀悪い）
+	if (usp > 0)
+	{
+		B_SUPER(usp);				// ユーザーモードへ復帰
+	}
 
 	// 背景画面のメモリ解放チェック
 	if (pBmpBackGround != NULL)
@@ -141,9 +174,11 @@ FORCE_QUIT:
 
 	//
 	printf("プログラムの実行を終了しました。\n");
-
-	return 0;
+	exit(0);
 }
+
+/* GCC のコンパイルオプションを復活 */
+#pragma GCC pop_options
 
 /// @brief スプライトパターン・パレットデータの読み込み
 /// スプライトパターンとパレットデータを読み込み定義する
