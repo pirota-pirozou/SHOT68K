@@ -19,6 +19,7 @@
 
 //#define PAD_TEST		// コメントを外すとゲームパッドの値表示テスト
 static int usp;			// スーパーバイザーモードのスタックポインタ
+int main_sp;			// main.c のスタックポインタ
 
 // 常駐データ
 pBMPFILE256 pBmpBackGround = NULL;		// BMPファイルデータ（ゲーム背景）
@@ -59,7 +60,9 @@ int main(int argc, char *argv[])
 	srand((unsigned)time(NULL));	// 乱数の初期化
 
 	usp = B_SUPER(0);				// スーパーバイザーモードのスタックポインタを取得
-//	setup_vector();					// 各種ベクタの設定
+	setup_vector();					// 各種ベクタの設定
+
+	asm volatile("move.l sp,%0" : "=r"(main_sp));	// main.c のスタックポインタを取得
 
 	screen_init();					// 画面初期化
 
@@ -147,11 +150,15 @@ __UNREACHABLE__;
 ///////////////////////////////////
 void PRG_QUIT(void)
 {
+	// main.c のスタックポインタを復元
+//	asm volatile("addq.l #4,sp");	// スタック捨てる（行儀悪い）
+	asm volatile("move.l %0,sp" : /* 出力 */
+								: /* 入力 */ "d"(main_sp));
+
 	CM_sprite_off();		// スプライト表示管理ＯＦＦ
 
 	screen_restore();		// DOS画面復帰
 
-	asm volatile("addq.l #4,sp");	// スタック捨てる（行儀悪い）
 	if (usp > 0)
 	{
 		B_SUPER(usp);				// ユーザーモードへ復帰
