@@ -139,7 +139,8 @@ int main(int argc, char *argv[])
 	// プログラム終了
 	// プログラムのAbortアドレスを強引にここに設定する
 FORCE_QUIT:
-	PRG_QUIT();
+	asm volatile("bra _PRG_QUIT");	// 行儀悪いが、強制終了
+//	PRG_QUIT();
 	// ここには到達しない
 __UNREACHABLE__;
 	return 0;
