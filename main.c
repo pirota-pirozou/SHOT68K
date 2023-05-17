@@ -65,6 +65,13 @@ int main(int argc, char *argv[])
 
 	asm volatile("move.l sp,%0" : "=r"(main_sp));	// main.c のスタックポインタを取得
 
+	int keep = zmsc_keepchk();		// ZMSCの常駐チェック
+	if (keep == 0)					// 常駐していない場合
+	{
+		printf("Z-MUSICが常駐していません。\n");
+		// 常駐してなくても動くようになっている
+//		PRG_QUIT();					// プログラム終了
+	}
 	zmsc_init();					// ZMSCライブラリの初期化
 
 	screen_init();					// 画面初期化
