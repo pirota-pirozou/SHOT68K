@@ -12,6 +12,7 @@
 	.xdef	_zmsc_init
 	.xdef	_zmsc_play
 	.xdef	_zmsc_stop
+	.xdef	_zmsc_cont
 	.xdef	_zmsc_fadeout
 	.xdef	_zmsc_seplay
 	.xdef	_zmsc_keepchk
@@ -44,7 +45,8 @@ _zmsc_init:
 	tst.w	keeped_flg				* 常駐フラグをチェック
 	beq	init_ret				* 常駐していない場合は何もしない
 
-	moveq	#0, d0
+	Z_MUSIC	#$00					* Z-MUSIC初期化
+	Z_MUSIC	#$0D					* Z-MUSIC初期設定
 init_ret:
 	rts
 
@@ -62,27 +64,73 @@ _zmsc_stop:
 	tst.w	keeped_flg				* 常駐フラグをチェック
 	beq	stop_ret				* 常駐していない場合は何もしない
 
-	moveq	#0, d0
-
+reglist	reg	d3-d4
+	movem.l reglist,-(sp)
+	moveq	#0, d2
+	moveq	#0, d3
+	moveq	#0, d4
+	Z_MUSIC	#$0A					* 演奏停止
+	movem.l (sp)+,reglist
 stop_ret:
+	rts
+
+	* void zmsc_cont(void);
+_zmsc_cont:
+	tst.w	keeped_flg				* 常駐フラグをチェック
+	beq	@f 					* 常駐していない場合は何もしない
+
+reglist	reg	d3-d4
+	movem.l reglist,-(sp)
+	moveq	#0, d2
+	moveq	#0, d3
+	moveq	#0, d4
+	Z_MUSIC	#$0B					* 演奏再開
+	movem.l (sp)+,reglist
+@@:
 	rts
 
 	* void zmsc_fadeout(void);
 _zmsc_fadeout:
 	tst.w	keeped_flg				* 常駐フラグをチェック
-	beq	fadeout_ret				* 常駐していない場合は何もしない
+	beq	@f					* 常駐していない場合は何もしない
 
-	moveq	#0, d0
-fadeout_ret:
+	moveq	#64,d2					* フェードアウト速度
+	Z_MUSIC	#$1A					* フェードアウト
+@@:
 	rts
 
+	.if 0
+--------------------------------------------------------------------------------
+ファンクション$12       se_play
+
+機能:   効果音演奏
+
+引数:   d2.l＝何トラックから割り込ませるか（1～32）
+	a1.l＝演奏データ格納アドレス(備考参照)
+
+戻り値: なし
+
+備考：  効果音の構造
+Offset  ＋0     :$10(.b)               ←偶数アドレス}
+        ＋1～＋6:'ZmuSiC'                            }メモリ上に無くても構わない
+	＋7     :Version Number(.b)                  }
+	＋8～   :共通コマンド                        }
+	＋?     :Number of tracks(.w)  ←a1.lで指し示すべきアドレス(偶数アドレス)
+	なお、内部フォーマットについての詳しい解説はMEASURE12参照
+--------------------------------------------------------------------------------
+	.endif
 	* void zmsc_seplay(void);
 _zmsc_seplay:
 	tst.w	keeped_flg				* 常駐フラグをチェック
-	beq	seplay_ret				* 常駐していない場合は何もしない
+	beq	@f					* 常駐していない場合は何もしない
+
+	moveq	#7, d2					* 7-8 トラックで再生
+	* ToDo *
+	lea	$10.w,a1				* 演奏データ格納アドレス（ダミー）
+	Z_MUSIC	#$12					* ＳＥ再生
 
 	moveq	#0, d0
-seplay_ret:
+@@:
 	rts
 
 	* int zmsc_keepchk(void);
