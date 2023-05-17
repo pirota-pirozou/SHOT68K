@@ -12,6 +12,7 @@
 #include "mylib.h"
 #include "BMPLoad256.h"
 #include "CMSprite.h"
+#include "zmsclib.h"
 #include "GamePadManager.h"
 #include "SceneManager.h"
 #include "SceneTitle.h"
@@ -63,6 +64,8 @@ int main(int argc, char *argv[])
 	setup_vector();					// 各種ベクタの設定
 
 	asm volatile("move.l sp,%0" : "=r"(main_sp));	// main.c のスタックポインタを取得
+
+	zmsc_init();					// ZMSCライブラリの初期化
 
 	screen_init();					// 画面初期化
 
@@ -159,6 +162,9 @@ void PRG_QUIT(void)
 	CM_sprite_off();		// スプライト表示管理ＯＦＦ
 
 	screen_restore();		// DOS画面復帰
+
+	zmsc_fadeout();				// 音楽フェードアウト
+
 
 	if (usp > 0)
 	{

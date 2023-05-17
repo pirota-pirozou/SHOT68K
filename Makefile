@@ -43,7 +43,7 @@ C_SRCS = main.c SceneManager.c GamePadManager.c ObjManager.c \
 		 BMPLoad256.c
 
 # *.s ソースファイル
-ASM_SRCS = mylib.s CMSprite.s
+ASM_SRCS = mylib.s CMSprite.s zmsclib.s
 
 # リンク対象のライブラリファイル
 LIBS =\
