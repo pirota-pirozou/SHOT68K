@@ -17,11 +17,11 @@ extern "C" {
 
 // プロトタイプ宣言
 void zmsc_init(void);
-void zmsc_play(int);
+void zmsc_play(void *);
 void zmsc_stop(void);
 void zmsc_cont(void);
 void zmsc_fadeout(void);
-void zmsc_seplay(void);
+void zmsc_seplay(void *);
 int zmsc_keepchk(void);
 
 

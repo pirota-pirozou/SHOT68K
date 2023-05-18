@@ -38,7 +38,7 @@ COMMON_FLAGS = -m$(CPU) -Os $(INCLUDE_FLAGS)
 CFLAGS = $(COMMON_FLAGS) -Wno-builtin-declaration-mismatch -fcall-used-d2 -fcall-used-a2 -finput-charset=cp932 -fexec-charset=cp932 -fverbose-asm
 
 # *.c ソースファイル
-C_SRCS = main.c SceneManager.c GamePadManager.c ObjManager.c \
+C_SRCS = main.c SceneManager.c GamePadManager.c ObjManager.c SoundManager.c \
 		 SceneTitle.c SceneGame.c \
 		 BMPLoad256.c
 

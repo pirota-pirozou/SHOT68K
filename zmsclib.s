@@ -50,10 +50,14 @@ _zmsc_init:
 init_ret:
 	rts
 
-        * void zmsc_play(int);
+        * void zmsc_play(void *ptr);
 _zmsc_play:
 	tst.w	keeped_flg				* 常駐フラグをチェック
 	beq	play_ret				* 常駐していない場合は何もしない
+
+	movea.l	4(sp),a1				* 演奏データ格納アドレス
+	moveq	#0,d2					* 高速応答
+	Z_MUSIC	#$11					* ZMD再生
 
 	moveq	#0, d0
 play_ret:
@@ -119,14 +123,13 @@ Offset  ＋0     :$10(.b)               ←偶数アドレス}
 	なお、内部フォーマットについての詳しい解説はMEASURE12参照
 --------------------------------------------------------------------------------
 	.endif
-	* void zmsc_seplay(void);
+	* void zmsc_seplay(void *ptr);
 _zmsc_seplay:
-	tst.w	keeped_flg				* 常駐フラグをチェック
-	beq	@f					* 常駐していない場合は何もしない
+*	tst.w	keeped_flg				* 常駐フラグをチェック
+*	beq	@f					* 常駐していない場合は何もしない
 
 	moveq	#7, d2					* 7-8 トラックで再生
-	* ToDo *
-	lea	$10.w,a1				* 演奏データ格納アドレス（ダミー）
+	movea.l	4(sp),a1				* 演奏データ格納アドレス
 	Z_MUSIC	#$12					* ＳＥ再生
 
 	moveq	#0, d0
@@ -146,7 +149,7 @@ _zmsc_keepchk:
 	* 常駐している
 	moveq	#0,d0
 	move.w	(a0)+,d0	* バージョン
-	move.w  d0, keeped_flg
+	move.w  #1, keeped_flg
 	rts
 
 	* 常駐していない

@@ -72,8 +72,13 @@ int main(int argc, char *argv[])
 		// 常駐してなくても動くようになっている
 //		PRG_QUIT();					// プログラム終了
 	}
-	zmsc_init();					// ZMSCライブラリの初期化
+	else
+	{
+		printf("Z-MUSICが常駐しています。\n");
+	}
 
+	SoundManager_Init();			// サウンドマネージャーの初期化
+	SoundManager_Load();			// ＢＧＭ・ＳＥの読み込み
 	screen_init();					// 画面初期化
 
 	gcls(0);						// グラフィック画面クリア０
@@ -171,6 +176,8 @@ void PRG_QUIT(void)
 	screen_restore();		// DOS画面復帰
 
 	zmsc_fadeout();				// 音楽フェードアウト
+
+	SoundManager_End();			// サウンドマネージャーの終了
 
 
 	if (usp > 0)

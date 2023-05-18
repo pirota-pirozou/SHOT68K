@@ -13,7 +13,7 @@
 #include "GamePadManager.h"
 #include "ObjManager.h"
 #include "CMSprite.h"
-#include "zmsclib.h"
+#include "SoundManager.h"
 
 typedef void (*FuncPtr0)(void);         // 関数ポインタの型定義
 

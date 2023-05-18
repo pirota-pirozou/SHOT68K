@@ -198,6 +198,7 @@ void Game_Update(void)
         // もし敵が地面に降りたら
         if (pObj->y >= DEADLINE_Y)
         {
+            SoundManager_PlaySE(SE_PBOMB);
             // プレイヤー爆破
             ObjManager_Make(OBJ_ID_PEFFECT, pObjPlayer->x, pObjPlayer->y);
             // プレイヤーを消す
@@ -396,6 +397,7 @@ void ObjFunc_Player(pSObj pObj)
         // A,Bボタンで弾発射
         if (pObjBullet == NULL)
         {
+            SoundManager_PlaySE(SE_PSHOT);
             pObjBullet = ObjManager_Make(OBJ_ID_PBULLET,
                 pObj->x, pObj->y-2);
             pObjBullet->vx = 0;
@@ -463,6 +465,7 @@ void ObjFunc_PBullet(pSObj pObj)
             if (cx < 8 && cy < 8)
             {
                 // 当たった
+                SoundManager_PlaySE(SE_EBOMB);
                 ObjManager_Destroy(pObj);      // 自機弾を消滅
                 pObjBullet = NULL;             // 出現フラグもクリア
                 //  敵爆発エフェクト
@@ -554,6 +557,7 @@ void ObjFunc_EBullet(pSObj pObj)
     if (cx < 12 && cy < 12)
     {
         // 当たった
+        SoundManager_PlaySE(SE_PBOMB);
         //  自機爆発エフェクト
         ObjManager_Make(OBJ_ID_PEFFECT,
             pObjPlayer->x, pObjPlayer->y);
