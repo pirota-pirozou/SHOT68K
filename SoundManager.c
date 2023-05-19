@@ -8,7 +8,8 @@ static pZMDdata bgm_zmd[BGM_MAX];
 static pZMDdata se_zmd[SE_MAX];
 
 static const char *bgm_file[BGM_MAX] = {
-    "BGM01.ZMD",
+//    "BGM01.ZMD",
+    "OG1.ZMD",
 };
 
 static const char *se_file[SE_MAX] = {
@@ -88,7 +89,6 @@ void SoundManager_Load()
     for (i = 0; i < SE_MAX; i++) {
         se_zmd[i] = zmd_load(se_file[i]);
     }
-    INKEY();
 }
 
 /////////////////////////////////
@@ -110,9 +110,9 @@ void SoundManager_PlayBGM(int no)
 void SoundManager_PlaySE(int no)
 {
     pZMDdata zmd = se_zmd[no];
-    if (zmd->data != NULL) {
+//    if (zmd->data != NULL) {
         zmsc_seplay(zmd->data);
-    }
+//    }
 }
 
 
