@@ -132,9 +132,8 @@ _zmsc_seplay:
 *	beq	@f					* 常駐していない場合は何もしない
 
 	movea.l	4(sp),a1				* 演奏データ格納アドレス
-	lea.l	16(a1),a1
-	moveq	#0,d1
-	moveq	#7,d2					* 7-8 トラックで再生
+	lea.l	$0A(a1),a1
+	moveq	#8,d2					* 再生トラック指定（内部的なもの+1されている）
 
 	Z_MUSIC	#$12					* ＳＥ再生
 
