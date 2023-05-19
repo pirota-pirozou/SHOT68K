@@ -99,6 +99,8 @@ void Game_Init(void)
     // プレイヤーの生成
     readyPlayer();
     initStage();                // ステージの初期化
+
+    SoundManager_PlayBGM(BGM_GAME); // BGMを再生
 }
 
 /// @brief 敵の弾を発射する
@@ -779,6 +781,8 @@ static void setGameOver(void)
     status = STATUS_GAMEOVER;
     player_left = 0;
     bgDraw_flg |= (BGDRAW_FLG_GAMEOVER | BGDRAW_FLG_LEFT);
+    // BGMをフェードアウト
+    zmsc_fadeout();
 }
 
 //////////////////////////////////////

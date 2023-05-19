@@ -36,6 +36,7 @@ void Title_Init(void)
 
     CM_bg_puts("VER 0.2", 24, 31, 1);
 
+    zmsc_stop();                // ÉTÉEÉìÉhí‚é~
     cou = 0;
 }
 

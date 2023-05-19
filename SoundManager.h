@@ -18,9 +18,8 @@
 // BGM‚Ì’è‹`
 enum
 {
-    BGM_TITLE = 0,
-//    BGM_GAME,
-    BGM_MAX = 0
+    BGM_GAME = 0,
+    BGM_MAX
 };
 
 // SE‚Ì’è‹`

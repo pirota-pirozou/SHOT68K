@@ -8,7 +8,7 @@ static pZMDdata bgm_zmd[BGM_MAX];
 static pZMDdata se_zmd[SE_MAX];
 
 static const char *bgm_file[BGM_MAX] = {
-//    "bgm_dummy.zmd",
+    "BGM01.ZMD",
 };
 
 static const char *se_file[SE_MAX] = {
