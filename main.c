@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 		printf("Z-MUSICが常駐しています。\n");
 	}
 
-	SoundManager_Init();			// サウンドマネージャーの初期化
+//	SoundManager_Init();			// サウンドマネージャーの初期化
 	SoundManager_Load();			// ＢＧＭ・ＳＥの読み込み
 	screen_init();					// 画面初期化
 
