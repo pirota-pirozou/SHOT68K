@@ -1,6 +1,6 @@
 // Path: ObjManager.c
 // このコードは、サンプルプログラムのサウンドマネージャー部分 SoundManager.c である。
-// ＯＢＪの更新、描画の管理を行う
+// ＢＧＭ、効果音の再生や管理を行う
 //
 #include "SoundManager.h"
 
