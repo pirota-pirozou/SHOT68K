@@ -42,8 +42,8 @@ keeped_flg:	.ds.w	1	* 常駐フラグ
 
         * void zmsc_init(void);
 _zmsc_init:
-*	tst.w	keeped_flg				* 常駐フラグをチェック
-*	beq	init_ret				* 常駐していない場合は何もしない
+	tst.w	keeped_flg				* 常駐フラグをチェック
+	beq	init_ret				* 常駐していない場合は何もしない
 
 	Z_MUSIC	#$00					* Z-MUSIC初期化
 	Z_MUSIC	#$0D					* Z-MUSIC初期設定
@@ -52,8 +52,8 @@ init_ret:
 
         * void zmsc_play(void *ptr);
 _zmsc_play:
-*	tst.w	keeped_flg				* 常駐フラグをチェック
-*	beq	play_ret				* 常駐していない場合は何もしない
+	tst.w	keeped_flg				* 常駐フラグをチェック
+	beq	play_ret				* 常駐していない場合は何もしない
 
 	movea.l	4(sp),a1				* 演奏データ格納アドレス
 	addq.l	#7,a1
@@ -68,8 +68,8 @@ play_ret:
 
 	* void zmsc_stop(void);
 _zmsc_stop:
-*	tst.w	keeped_flg				* 常駐フラグをチェック
-*	beq	stop_ret				* 常駐していない場合は何もしない
+	tst.w	keeped_flg				* 常駐フラグをチェック
+	beq	stop_ret				* 常駐していない場合は何もしない
 
 reglist	reg	d3-d4
 	movem.l reglist,-(sp)
@@ -83,8 +83,8 @@ stop_ret:
 
 	* void zmsc_cont(void);
 _zmsc_cont:
-*	tst.w	keeped_flg				* 常駐フラグをチェック
-*	beq	@f 					* 常駐していない場合は何もしない
+	tst.w	keeped_flg				* 常駐フラグをチェック
+	beq	@f 					* 常駐していない場合は何もしない
 
 reglist	reg	d3-d4
 	movem.l reglist,-(sp)
@@ -98,8 +98,8 @@ reglist	reg	d3-d4
 
 	* void zmsc_fadeout(void);
 _zmsc_fadeout:
-*	tst.w	keeped_flg				* 常駐フラグをチェック
-*	beq	@f					* 常駐していない場合は何もしない
+	tst.w	keeped_flg				* 常駐フラグをチェック
+	beq	@f					* 常駐していない場合は何もしない
 
 	moveq	#64,d2					* フェードアウト速度
 	Z_MUSIC	#$1A					* フェードアウト
@@ -128,8 +128,8 @@ Offset  ＋0     :$10(.b)               ←偶数アドレス}
 	.endif
 	* void zmsc_seplay(void *ptr);
 _zmsc_seplay:
-*	tst.w	keeped_flg				* 常駐フラグをチェック
-*	beq	@f					* 常駐していない場合は何もしない
+	tst.w	keeped_flg				* 常駐フラグをチェック
+	beq	@f					* 常駐していない場合は何もしない
 
 	movea.l	4(sp),a1				* 演奏データ格納アドレス
 	lea.l	$0A(a1),a1
