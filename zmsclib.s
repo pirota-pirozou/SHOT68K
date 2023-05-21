@@ -7,7 +7,6 @@
 
 	include iocscall.mac
 	include doscall.mac
-	include	macro.h
 
 	.xdef	_zmsc_init
 	.xdef	_zmsc_play
