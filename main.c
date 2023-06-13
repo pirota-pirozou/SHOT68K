@@ -7,6 +7,11 @@
 #include <time.h>
 #include <doslib.h>
 #include <iocslib.h>
+
+#if defined(__cplusplus)
+#include "cxx_for_xc.h"
+#endif
+
 #include "CF_MACRO.h"
 #include "types.h"
 #include "mylib.h"
@@ -57,6 +62,16 @@ void PRG_QUIT(void);
 /* main */
 int main(int argc, char *argv[])
 {
+#if defined(__cplusplus)
+	/*
+		スタティックコンストラクタを実行する。
+		スタティックデストラクタはスタティックコンストラクタが自動で atexit
+		関数として登録してくれる。
+		ここでも注意が必要で、atexit 関数の登録可能数には上限（XC 利用時は
+		32 個）がある。
+	*/
+	execute_static_ctors();
+#endif
 	allmem();						// mallocの初期化
 	srand((unsigned)time(NULL));	// 乱数の初期化
 

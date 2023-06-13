@@ -21,9 +21,13 @@ CXX = ${XDEV68K_DIR}/m68k-toolchain/bin/m68k-elf-g++
 CC = ${XDEV68K_DIR}/m68k-toolchain/bin/m68k-elf-gcc
 GAS2HAS = perl ${XDEV68K_DIR}/util/x68k_gas2has.pl -cpu $(CPU) -inc doscall.inc -inc iocscall.inc
 RUN68 = $(ATOMIC) ${XDEV68K_DIR}/run68/run68
-HAS = $(RUN68) ${XDEV68K_DIR}/x68k_bin/HAS060.X
-HLK = $(RUN68) ${XDEV68K_DIR}/x68k_bin/hlk301.x
 XDFARC = $(RUN68) ${XDEV68K_DIR}/x68k_bin/xdfarc.x
+# HAS = $(RUN68) ${XDEV68K_DIR}/x68k_bin/HAS060.X
+# HLK = $(RUN68) ${XDEV68K_DIR}/x68k_bin/hlk301.x
+# for C++
+HAS = $(RUN68) ${XDEV68K_DIR}/x68k_bin/HAS060.X
+GAS = $(RUN68) ${XDEV68K_DIR}/x68k_bin/g2as.x
+HLK = $(RUN68) ${XDEV68K_DIR}/x68k_bin/g2lk.x
 
 # 実行ファイル名
 EXECUTABLE = SHOT68K.X
@@ -38,7 +42,7 @@ COMMON_FLAGS = -m$(CPU) -Os $(INCLUDE_FLAGS)
 CFLAGS = $(COMMON_FLAGS) -Wno-builtin-declaration-mismatch -fcall-used-d2 -fcall-used-a2 -finput-charset=cp932 -fexec-charset=cp932 -fverbose-asm
 
 # *.c ソースファイル
-C_SRCS = main.c SceneManager.c GamePadManager.c ObjManager.c SoundManager.c \
+C_SRCS = main.c cxx_for_xc.c SceneManager.c GamePadManager.c ObjManager.c SoundManager.c \
 		 SceneTitle.c SceneGame.c \
 		 BMPLoad256.c
 
@@ -95,7 +99,7 @@ $(INTERMEDIATE_DIR)/%.o : %.c Makefile
 	$(CC) -S $(CFLAGS) -o $(INTERMEDIATE_DIR)/$*.m68k-gas.s $<
 	$(GAS2HAS) -i $(INTERMEDIATE_DIR)/$*.m68k-gas.s -o $(INTERMEDIATE_DIR)/$*.s
 	rm -f $(INTERMEDIATE_DIR)/$*.m68k-gas.s
-	$(HAS) -e -u -w0 $(INCLUDE_FLAGS) $(INTERMEDIATE_DIR)/$*.s -o $(INTERMEDIATE_DIR)/$*.o
+	$(GAS) -e -u -w0 $(INCLUDE_FLAGS) $(INTERMEDIATE_DIR)/$*.s -o $(INTERMEDIATE_DIR)/$*.o
 
 # *.s ソースのアセンブル
 $(INTERMEDIATE_DIR)/%.o : %.s Makefile
